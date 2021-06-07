@@ -1,0 +1,14 @@
+html {
+	background-color: #011122;
+	color: #ababab;
+}
+
+body {
+	text-align: center;
+}
+
+header {
+	display: inline-block;
+	text-align:center;
+	align-items: center;`
+}
