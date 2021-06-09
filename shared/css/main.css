@@ -59,6 +59,15 @@ a:hover {
 	font-size: 1.5em;
 }
 
+.article-image-div {
+	text-align: center;
+}
+
+.article-image-subtitle {
+	font-style: italic;
+	color: lightgray;
+}
+
 .article-paragraph {
 	font-size: 1.2em;
 }
