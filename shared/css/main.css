@@ -1,14 +1,65 @@
 html {
-	background-color: #011122;
 	color: #ababab;
 }
 
 body {
-	text-align: center;
+	font-family: sans-serif;
+	background-image: linear-gradient(to bottom right, #014422, #102255);
 }
 
-header {
+main {
+	margin-left: 5%;
+	margin-right: 5%;
 	display: inline-block;
-	text-align:center;
+}
+
+header, footer {
+	text-align: center;
 	align-items: center;`
 }
+
+hr {
+	color: #777777;
+}
+
+code {
+	font-size: 1.1em;
+	border-radius: 10%;
+	background-color: black;
+	padding: 3px;
+}
+
+a {
+	text-decoration: none;
+}
+a:link {
+	color: #aaaaff;
+}
+a:visited {
+	color: hotpink;
+}
+a:hover {
+	color: red;
+}
+
+.article-title {
+	font-size: 2.1em
+}
+
+.article-subtitle {
+	font-style: italic;
+	font-weight: bold;
+}
+
+.article-heading1 {
+	font-size: 1.7em;
+}
+
+.article-heading2 {
+	font-size: 1.5em;
+}
+
+.article-paragraph {
+	font-size: 1.2em;
+}
+
