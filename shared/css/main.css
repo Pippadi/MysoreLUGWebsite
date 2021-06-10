@@ -1,10 +1,12 @@
 html {
 	color: #ababab;
+	min-height: 100%;
 }
 
 body {
 	font-family: sans-serif;
 	background-image: linear-gradient(to bottom right, #014422, #102255);
+	min-height: 100%;
 }
 
 main {
