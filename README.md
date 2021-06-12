@@ -7,7 +7,8 @@ The webpages themselves are designed to be very, very simple, in contrast to the
 
 ## Contribution
 To get started with an article, fork the repository and create a new folder for your article in `articles`, under the appropriate year and month folders.
-Any article can be used as a template, as the formatting is uncomplicated.
+There is a folder called `template-article` which will tell you where you need to keep what, and how to format your content.
+
 Once your article reads and looks the way you want it, submit a pull request with your changes. They will be reviewed, and if satisfactory, merged.
 The same goes for edits of others' articles, and changes to the format itself.
 
