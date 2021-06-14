@@ -1,0 +1,105 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<title>My Linux Story</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+<main>
+
+<h1 class="article-title">Fumbling Around with a WiFi Card</h1>
+<p class="article-subtitle">By Prithvi Vishak</p>
+<p class="article-subtitle">Created June 9th, 2021</p>
+<hr>
+
+<p class="article-paragraph">
+You might remember reading the blurb about the home-refurbished Toshiba laptop, called the PAC, on this site's <a href="/">homepage</a>. The A and C are my friends Aryan and Chirag, and I am the P. Maybe I'll write about how we built it later.
+</p>
+<p class="article-paragraph">
+Anyway, we agreed that we would pass it around each other's houses a couple times a year so that everyone gets to keep and use it (I suppose users getting time slots on a computer never gets old), and that we could use it for whatever we wanted.
+</p>
+<p class="article-paragraph">
+The other day, I found the WiFi card I had salvaged from an old ThinkPad. It used the PCIe minicard form-factor (One of them, at least. An opportune moment for an <a href="https://xkcd.com/927/">xkcd comic</a>.) that the PAC happened to use as well.
+The Toshiba Satellite A135 the PAC is built from is from 2008. It had some Qualcomm Atheros chipset (Toshiba-branded, a fact whose relevance will soon become apparent) that supported only 802.11bg.
+</p>
+<p class="article-paragraph">
+That ThinkPad was from 2011, and it happened to have an Intel Centrino Ultimate-N 6300, supporting, well, 802.11n. Yay! All I had to do now was remove the old card, and slot the new one in, right?
+</p>
+<p class="article-paragraph">
+<b><em>Wrong.</em></b>
+</p>
+
+<p class="article-paragraph">
+They were different lengths, and there wasn't a screw hole for the shorter length. Well, nothing an old cream cheese tub and soldering iron couldn't fix (the soldering iron was to burn the holes).
+</p>
+
+<div class="article-image-div">
+<img src="assets/card-in-slot.jpg" width="80%" height="auto" alt="WiFi card in slot">
+<p class="article-image-caption">So this must be how they make things fit at NASA</p>
+</div>
+
+<p class="article-paragraph">
+Now for the software side of things. When I logged into the Xfce desktop, I'd usually see WiFi connect almost immediately. This time it didn't. <em>Okay.</em>
+</p>
+
+<p class="article-paragraph">
+<div class="article-code">
+<code>~$ lspci -v
+...
+03:00.0 Network controller [0280]: Intel Corporation Centrino Ultimate-N 6300 [8086:422b] (rev 3e)
+    Subsystem: Intel Corporation Centrino Ultimate-N 6300 3x3 AGN [8086:1101]
+    Flags: bus master, fast devsel, latency 0, IRQ 53
+    Memory at f0200000 (64-bit, non-prefetchable) [size=8K]
+    Capabilities: <access denied>
+    Kernel driver in use: iwlwifi
+    Kernel modules: iwlwifi
+...
+</code>
+</div>
+</p>
+
+<p class="article-paragraph">
+Yay! It recognizes it, and has a driver and everything. I was worried it had one of those Broadcom chipsets that are supposedly super unreliable and need a proprietary driver. All I had to do now was maybe configure a new network connection.
+</p>
+<p class="article-paragraph">
+<b><em>Wrong.</em></b>
+</p>
+<p class="article-paragraph">
+It wouldn't even show up in NetworkManager. Great. To <a href="https://askubuntu.com/questions/834911/wifi-hard-blocked-on-toshiba-satellite-a665-s6086">StackExchange</a>.
+</p>
+<p class="article-paragraph">
+<div class="article-code">
+<code>~$ sudo rfkill list all
+0: phy0: Wireless LAN
+	Soft blocked: no
+	Hard blocked: yes
+</code>
+</div>
+</p>
+
+<p class="article-paragraph">
+<em>Okay.</em> That's something. The motherboard has a little wireless kill switch on it, and suffice it to say that it didn't change much. No amount of <code>modprobe</code>ing and rebooting helped. <em>&lt;Angry kernel sounds&gt;</em>
+</p>
+<p class="article-paragraph">
+By that time, I was frustrated and tired, and didn't want to dig any further. I put the old card back in, and reassembled the box (of course forgetting to screw the motherboard in). I attributed the blocking of the Intel card to the BIOS being locked to the one put in by Toshiba. The preinstalled card was Toshiba-branded anyway.
+I put the Intel card back into the box I fished it out of and thought about other things (like the homework I had to do by the next day).
+</p>
+
+<p class="article-paragraph">
+Why did I write about this? Maybe to guide someone to that StackExchange page if they were having the same problem, though I doubt DuckDuckGo would put this website above StackOverflow in search results. I guess I just wanted to document it, or to paraphrase The Big Bang Theory, <em>because I can</em>.
+</p>
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>
+</footer>
+</body>
+</html>

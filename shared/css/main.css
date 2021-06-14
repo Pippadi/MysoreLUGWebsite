@@ -70,6 +70,13 @@ a:hover {
 	color: lightgray;
 }
 
+.article-code {
+	background: black;
+	padding: 7px;
+	border-radius: 5px;
+	white-space: pre;
+}
+
 .article-paragraph {
 	font-size: 1.2em;
 }
