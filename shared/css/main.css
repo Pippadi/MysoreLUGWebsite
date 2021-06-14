@@ -29,6 +29,7 @@ code {
 	border-radius: 10%;
 	background-color: black;
 	padding: 2px;
+	overflow-wrap: break-text;
 }
 
 a {
@@ -74,7 +75,8 @@ a:hover {
 	background: black;
 	padding: 7px;
 	border-radius: 5px;
-	white-space: pre;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
 }
 
 .article-paragraph {
