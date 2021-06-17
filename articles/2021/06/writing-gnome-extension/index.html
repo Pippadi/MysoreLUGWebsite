@@ -1,0 +1,162 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<title>Writing a GNOME Extension</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">Writing a GNOME Extension</h1>
+<p class="article-subtitle">By Prithvi Vishak</p>
+<p class="article-subtitle">Created June 16th, 2021</p>
+<hr>
+
+<p class="article-paragraph">
+Unfortunately, there is very little documentation regarding how to write extensions for the GNOME desktop environment. The GNOME libraries seem to be fairly well documented, but it can be exhausting to read through it all. Often, people, including me when I wrote my first extension, just got code snippets from other peoples' extensions. This article aims to document how I built mine.
+</p>
+
+<div class="article-image-div">
+<img src="assets/gnome-logo.png" width="200px" height="auto" alt="GNOME Logo">
+<p class="article-image-caption"><a href="https://gnome.org">Guh-NOME</a></p>
+</div>
+
+<h3 class="article-heading1">What It Should Do</h3>
+<p class="article-paragraph">
+The extension is called <a href="https://extensions.gnome.org/extension/4353/macbook-battery-percentage-corrector/">MacBook Battery Percentage Corrector</a>. It exists because MacBooks (Intel-based ones, at least) have a custom SMC, or System Management Controller.
+According to <a href="https://en.wikipedia.org/wiki/System_Management_Controller">Wikipedia</a>, it is supposed to be an equivalent to a PMU, or Power Management Unit, on regular PC laptops.
+</p>
+<p class="article-paragraph">
+PMUs report a number of different metrics. <br>
+<div class="article-code">
+<code>~$ upower -i /org/freedesktop/UPower/devices/battery_BAT1
+  native-path:          BAT1
+  vendor:               सेब Inc.
+  model:                A1A4492
+  serial:               2345
+  power supply:         yes
+  updated:              Thu 17 Jun 2021 01:48:50 PM IST (32 seconds ago)
+  has history:          yes
+  has statistics:       yes
+  battery
+    present:             yes
+    rechargeable:        yes
+    state:               fully-charged
+    warning-level:       none
+    energy:              56.66 Wh
+    energy-empty:        0 Wh
+    energy-full:         57.33 Wh
+    energy-full-design:  71.1 Wh
+    energy-rate:         0.00591272 W
+    voltage:             12.728 V
+    percentage:          98%
+    capacity:            80.6329%
+    technology:          lithium-ion
+    icon-name:          'battery-full-charged-symbolic'
+</code>
+</div>
+</p>
+<p class="article-paragraph">
+Your desktop gets these metrics through a power subsystem such as <a href="https://upower.freedesktop.org">UPower</a> and displays it on your desktop. The thing with Apple's SMC, though, is that the metrics it reports don't seem to follow the convention that PC laptop PMUs do.
+On MacBooks, Linux seems to read battery percentage as the percentage of capacity <em>by design</em> (<code>energy-full-design</code> above). Batteries degrade, or lose some capacity, with every charge-discharge cycle.
+This means that the more a battery is used, the smaller its maximum capacity becomes. Normally, operating systems consider battery degradation while reporting percentage.
+That doesn't seem to be the case with Linux on a MacBook.
+</p>
+<p class="article-paragraph">
+Long story short, as indicated by their motto, Apple has a pathological need to do their own nonsense and not follow standards. That's probably the reason Linux considers the wrong values while reporting battery percentage.
+</p>
+
+<h3 class="article-heading1">How It Should Work</h3>
+<p class="article-paragraph">
+These battery metrics can be found in the directory <code>/sys/class/power_supply/BAT0</code>. We need to do the following:
+<ol>
+	<li>Read the <code>charge_now</code> and <code>charge_full</code> files</li>
+	<li>Calculate percentage from these numbers</li>
+	<li>Replace the indicator in the top-right corner with what we calculated</li>
+</ol>
+</p>
+
+<h3 class="article-heading1">Code</h3>
+<p class="article-paragraph">
+A good place to start would be <a href="https://gjs.guide/extensions/development/creating.html#gnome-extensions-tool">GNOME's official extension guide</a>. Extensions follow certain <a href="https://wiki.gnome.org/Projects/GnomeShell/Extensions/Review">guidelines</a>.
+Other useful documentation is listed on <a href="https://stackoverflow.com/questions/13107743/documentation-for-writing-gnome-shell-extensions">the world's most useful website</a>.
+Here's a look at my code:
+</p>
+<p class="article-paragraph">
+<div class="article-code">
+<code>const Panel = imports.ui.main.panel;
+const { GObject } = imports.gi;
+const GLib = imports.gi.GLib;
+const BaseIndicator = imports.ui.status.power.Indicator;
+
+let aggregateMenu = Panel.statusArea['aggregateMenu'];
+let origIndicator;
+let newIndicator;
+
+const BatPath = "/sys/class/power_supply/BAT0"
+
+function init() {}
+
+function enable() {
+	origIndicator = aggregateMenu._power;
+	newIndicator = new Indicator();
+	aggregateMenu._indicators.replace_child(origIndicator, newIndicator);
+}
+
+function disable() {
+	aggregateMenu._indicators.replace_child(newIndicator, origIndicator);
+}
+
+function readFile(filepath) {
+	return String(GLib.file_get_contents(filepath)[1]).replace("\n", "");
+}
+
+var Indicator = GObject.registerClass(
+	class Indicator extends BaseIndicator {
+		_getCorrectPercentage() {
+			let charge_full = parseInt(readFile(BatPath + "/charge_full"));
+			let charge_now = parseInt(readFile(BatPath + "/charge_now"));
+			let percentage = Math.trunc((charge_now/charge_full) * 100);
+			return percentage + "%";
+		}
+		_sync() {
+			super._sync();
+			this._percentageLabel.text = this._getCorrectPercentage();
+		}
+	}
+);
+</code>
+</div>
+</p>
+
+<p class="article-paragraph">
+All right. Let's go through this real quick. At the top there are some imports and global variables. <code>GLib</code> and <code>GObject</code> are some GNOME libraries. Everything else is pretty self-explanatory.
+<code>function init()</code> is a function required by GNOME in <code>extension.js</code>. My extension doesn't need anything to be done when GNOME Shell starts, so I've left it empty.
+</p>
+
+<p class="article-paragraph">
+At the end of the code, we see a class definition. It inherits from GNOME's battery power indicator base class. The function <code>readFile</code>, well, reads the content of a file and returns it as a string.
+The <code>_getCorrectPercentage</code> function reads the battery's current charge and full charge values from the files mentioned above, and returns the percentage formatted as a string.
+The <code>_sync</code> function runs every time battery power status is updated. It sets the text of the percentage label next to the battery icon to the value <code>_getCorrectPercentage</code> calculates. This overwrites the incorrect value.
+</p>
+
+<p class="article-paragraph">
+<code>enable</code> runs when the extension is enabled. <code>origIndicator = aggregateMenu._power;</code> stores the default indicator in a variable, so that it can be restored if the extension is disabled. It then creates a new instance of our custom battery status indicator, and puts that in the old one's place.
+<code>disable</code> runs when, well, the extension is disabled. It simply replaces our custom indicator with the original we stored away.
+</p>
+
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>
+</footer>
+</body>
+</html>
