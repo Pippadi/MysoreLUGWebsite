@@ -22,4 +22,4 @@ for item in ** ; do
 	fi
 done
 
-echo '</urlset' >> $sitemapfile
+echo '</urlset>' >> $sitemapfile
