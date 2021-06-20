@@ -83,11 +83,23 @@ It wouldn't even show up in NetworkManager. Great. To <a href="https://askubuntu
 
 <p class="article-paragraph">
 <em>Okay.</em> That's something. The motherboard has a little wireless kill switch on it. Unfortunately, manipulating that didn't have much effect.
-No amount of <code>modprobe</code>ing and rebooting helped. <em>&lt;Angry kernel sounds&gt;</em>
+</p>
+
+<p class="article-paragraph">
+<div class="article-code">
+<code>~$ sudo modprobe iwlwifi nohwcrypt=1
+</code>
+</div>
+</p>
+
+<p class="article-paragraph">
+No amount of <code>modprobe</code>ing and rebooting helped. The only option I fiddled with was <code>hwcrypt</code>, which enabled/disabled hardware encryption.
+No luck, though in hindsight, I probably should have tried some other options (which I will one day). <em>&lt;Angry kernel sounds&gt;</em>
 </p>
 <p class="article-paragraph">
 By that time, I was frustrated and tired, and didn't want to dig any further. I put the old card back in, and reassembled the box (of course forgetting to screw the motherboard in). I attributed the blocking of the Intel card to the BIOS being locked to the one put in by Toshiba. The preinstalled card was Toshiba-branded anyway.
-I put the Intel card back into the box I fished it out of and thought about other things (like the homework I had to do by the next day).
+Upon further reading, I found that Lenovo and HP do exactly this. I haven't found any mention of Toshiba doing this, though, so I am probably just missing something. I'll try more <code>modprobe</code>ing another day, and edit this article accordingly.
+Anyway, I put the Intel card back into the box I fished it out of and thought about other things (like the homework I had to do by the next day).
 </p>
 
 <p class="article-paragraph">
