@@ -19,10 +19,9 @@
 <hr>
 
 <p class="article-paragraph">
-The scientific Python stack, which includes the SciPy library, NumPy, IPython, Matplotlib, SymPy and pandas is the go-to for any scientific computation, data analysis or the third element of this list that one may want to perform using Python. From scipy.org: "SciPy (pronounced “Sigh Pie”) is a Python-based ecosystem of open-source software for mathematics, science, and engineering.".
-
+The scientific Python stack, which includes the SciPy library, NumPy, IPython, Matplotlib, SymPy and pandas is the go-to for any scientific computation, data analysis or the third element of this list that one may want to perform using Python.
+From scipy.org: "SciPy (pronounced “Sigh Pie”) is a Python-based ecosystem of open-source software for mathematics, science, and engineering.".
 </p>
-
 
 <p class="article-paragraph">
 For the first article, I decided to re-learn how to use Matplotlib, or at least the resources it provides that I'll be using most often. Matplotlib and the entire SciPy ecosystem have great documentation, so learning how to use them is painless and simple. (I can't guarantee painlessness, but it is simple.)
@@ -37,13 +36,17 @@ With the first program, I aimed to do three things:
 </ol>
 (Well, we're still on the first article, aren't we?)
 The data set I considered had the temperatures in Montreal for the week this was written.
-<br>
-</br>
-To do this, I used matplotlib.pyplot, which provides a large number of functions that allow us to create all sorts of simple plots. The most basic function one could consider is matplotlib.pyplot.plot(x_values,y_values), which will plot a smooth line through each x and y coordinate provided (with the first ordered pair consisting of x_values[0] and y_values[0] and so on.). I also used some other basic functions in this first program to add a key and label the graph.
-<br>
-</br>
+</p>
+
+<p class="article-paragraph">
+To do this, I used <code>matplotlib.pyplot</code>, which provides a large number of functions that allow us to create all sorts of simple plots.
+The most basic function one could consider is <code>matplotlib.pyplot.plot(x_values,y_values)</code>, which will plot a smooth line through each x and y coordinate provided (with the first ordered pair consisting of <code>x_values[0]</code> and <code>y_values[0]</code> and so on.).
+I also used some other basic functions in this first program to add a key and label the graph.
+</p>
+
+<p class="article-paragraph">
 <div class="article-code">
-import matplotlib.pyplot as plt
+<code>import matplotlib.pyplot as plt
 
 t_high = [23,23,22,25,25,20]
 t_low = [18,17,11,12,17,17]
@@ -57,15 +60,16 @@ plt.xlabel('Temperatures in Montreal this week')
 plt.legend(title='Key')
 
 plt.show()
+</code>
 </div>
 </p>
 
 <p class="article-paragraph">
-The second program was written just to try out some Numpy functions (np.sin and np.cos). The first time I wrote the program, I blitzed out a list of about 10 x values, not really thinking much about how many I would actually need to get a plot that had anything remotely resembling the sine and cosine functions, and was promptly reminded what an idiot I am when I hit run. Well, on my second pass, I used np.linspace(a, b), which generates a list of 50 (or more or less, 50's the default)  evenly spaced values in the interval [a,b]. This worked. 
-<br>
-</br>
+The second program was written just to try out some Numpy functions (<code>np.sin</code> and <code>np.cos</code>). The first time I wrote the program, I blitzed out a list of about 10 x values, not really thinking much about how many I would actually need to get a plot that had anything remotely resembling the sine and cosine functions, and was promptly reminded what an idiot I am when I hit run.
+Well, on my second pass, I used <code>np.linspace(a, b)</code>, which generates a list of 50 (or more or less, 50's the default) evenly spaced values in the interval [a,b]. This worked. 
+
 <div class="article-code">
-import matplotlib.pyplot as plt
+<code>import matplotlib.pyplot as plt
 import numpy as np
 
 x_vals = np.linspace(0,6)
@@ -83,15 +87,15 @@ plt.annotate('sin(3π/2)', xy = (3*np.pi/2, -1))
 plt.legend()
 
 plt.show()
+</code>
 </div>
 </p>
 
 <p class="article-paragraph">
 The third program was smooth sailing again, and was written to figure out how to create subplots. One thing a user might want to note is that the coordinates are assigned with (0,0) being the top-left corner.
-<br>
-</br>
+
 <div class="article-code">
-import matplotlib.pyplot as plt
+<code>import matplotlib.pyplot as plt
 import numpy as np
 
 fig, ax = plt.subplots(2,2)
@@ -113,15 +117,15 @@ ax[1, 1].plot(x_vals, y4_vals, 'y--')
 
 
 plt.show()
+</code>
 </div>
 </p>
 
 <p class="article-paragraph">
 The fourth program had no real utilitarian purpose and was just to try out the xkcd style plotting feature for fun.
-<br>
-</br>
+
 <div class="article-code">
-import matplotlib.pyplot as plt
+<code>import matplotlib.pyplot as plt
 import numpy as np
 
 with plt.xkcd():
@@ -130,6 +134,7 @@ with plt.xkcd():
     plt.ylabel('Thickness of ice sheets 21,000 years ago (m)')
     
     plt.show()
+</code>
 </div>
 </p>
 
@@ -137,7 +142,7 @@ with plt.xkcd():
 Well, that's about it. Relevant links will probably be below this paragraph and the next article's probably going to be about applying Matplotlib and learning how to use pandas, the SciPy stack's data analysis library. 
 </p>
 
-<a href="https://scipy.org/">SciPy's official website (Has links to the entire ecosystem's individual websites)</a>
+<p class="article-paragraph"><a href="https://scipy.org/">SciPy's official website (Has links to the entire ecosystem's individual websites)</a></p>
 
 </main>
 
