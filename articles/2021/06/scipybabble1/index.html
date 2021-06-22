@@ -3,8 +3,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="format-detection" content="address=no, telephone=no, date=no">
 	<title>SciPy Babble</title>
-	<!This file must be called index.html>
-	<!If you want you use a custom stylesheet (or JavaScript if you _really_ need it), keep it in the same folder as your index.html>
 	<link rel="stylesheet" type="text/css" href="../../shared/css/main.css">
 </head>
 <body>
@@ -32,13 +30,18 @@ For the first article, I decided to re-learn how to use Matplotlib, or at least 
 
 <p class="article-paragraph">
 With the first program, I aimed to do three things:
-1. Figure out how to plot a graph
-2. Figure out how to annotate that graph
-3. Figure out how to change styles on that graph
+<ol>
+	<li>Figure out how to plot a graph</li>
+	<li>Figure out how to annotate that graph</li>
+	<li>Figure out how to change styles on that graph</li>
 (Well, we're still on the first article, aren't we?)
 The data set I considered had the temperatures in Montreal for the week this was written.
+<br>
+</br>
 To do this, I used matplotlib.pyplot, which provides a large number of functions that allow us to create all sorts of simple plots. The most basic function one could consider is matplotlib.pyplot.plot(x_values,y_values), which will plot a smooth line through each x and y coordinate provided (with the first ordered pair consisting of x_values[0] and y_values[0] and so on.). I also used some other basic functions in this first program to add a key and label the graph.
-<code>
+<br>
+</br>
+<div class="article-code">
 import matplotlib.pyplot as plt
 
 t_high = [23,23,22,25,25,20]
@@ -53,12 +56,14 @@ plt.xlabel('Temperatures in Montreal this week')
 plt.legend(title='Key')
 
 plt.show()
-</code>
+</div>
 </p>
 
 <p class="article-paragraph">
 The second program was written just to try out some Numpy functions (np.sin and np.cos). The first time I wrote the program, I blitzed out a list of about 10 x values, not really thinking much about how many I would actually need to get a plot that had anything remotely resembling the sine and cosine functions, and was promptly reminded what an idiot I am when I hit run. Well, on my second pass, I used np.linspace(a, b), which generates a list of 50 (or more or less, 50's the default)  evenly spaced values in the interval [a,b]. This worked. 
-<code>
+<br>
+</br>
+<div class="article-code">
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -77,12 +82,14 @@ plt.annotate('sin(3π/2)', xy = (3*np.pi/2, -1))
 plt.legend()
 
 plt.show()
-</code>
+</div>
 </p>
 
 <p class="article-paragraph">
 The third program was smooth sailing again, and was written to figure out how to create subplots. One thing a user might want to note is that the coordinates are assigned with (0,0) being the top-left corner.
-<code>
+<br>
+</br>
+<div class="article-code">
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -105,12 +112,14 @@ ax[1, 1].plot(x_vals, y4_vals, 'y--')
 
 
 plt.show()
-</code>
+</div>
 </p>
 
 <p class="article-paragraph">
 The fourth program had no real utilitarian purpose and was just to try out the xkcd style plotting feature for fun.
-<code>
+<br>
+</br>
+<div class="article-code">
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -120,7 +129,7 @@ with plt.xkcd():
     plt.ylabel('Thickness of ice sheets 21,000 years ago (m)')
     
     plt.show()
-</code>
+</div>
 </p>
 
 <p class="article-paragraph">
