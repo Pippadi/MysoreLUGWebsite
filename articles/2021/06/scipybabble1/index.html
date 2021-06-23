@@ -64,9 +64,19 @@ plt.show()
 </div>
 </p>
 
+<div class="article-image-div">
+<img src="assets/P1.png" width="80%" height="auto">
+<p class="article-image-caption">Our first plot</p>
+</div>
+
 <p class="article-paragraph">
 The second program was written just to try out some Numpy functions (<code>np.sin</code> and <code>np.cos</code>). The first time I wrote the program, I blitzed out a list of about 10 x values, not really thinking much about how many I would actually need to get a plot that had anything remotely resembling the sine and cosine functions, and was promptly reminded what an idiot I am when I hit run.
 Well, on my second pass, I used <code>np.linspace(a, b)</code>, which generates a list of 50 (or more or less, 50's the default) evenly spaced values in the interval [a,b]. This worked. 
+
+<div class="article-image-div">
+<img src="assets/P5.png" width="80%" height="auto">
+<p class="article-image-caption">This doesn't work.</p>
+</div>
 
 <div class="article-code">
 <code>import matplotlib.pyplot as plt
@@ -90,6 +100,11 @@ plt.show()
 </code>
 </div>
 </p>
+
+<div class="article-image-div">
+<img src="assets/P2.png" width="80%" height="auto" alt="WiFi card in slot">
+<p class="article-image-caption">And this works</p>
+</div>
 
 <p class="article-paragraph">
 The third program was smooth sailing again, and was written to figure out how to create subplots. One thing a user might want to note is that the coordinates are assigned with (0,0) being the top-left corner.
@@ -121,6 +136,11 @@ plt.show()
 </div>
 </p>
 
+<div class="article-image-div">
+<img src="assets/P3.png" width="80%" height="auto">
+<p class="article-image-caption">COVID case progressions in different universes.</p>
+</div>
+
 <p class="article-paragraph">
 The fourth program had no real utilitarian purpose and was just to try out the xkcd style plotting feature for fun.
 
@@ -137,6 +157,11 @@ with plt.xkcd():
 </code>
 </div>
 </p>
+
+<div class="article-image-div">
+<img src="assets/P4.png" width="80%" height="auto">
+<p class="article-image-caption">https://xkcd.com/1225/</p>
+</div>
 
 <p class="article-paragraph">
 Well, that's about it. Relevant links will probably be below this paragraph and the next article's probably going to be about applying Matplotlib and learning how to use pandas, the SciPy stack's data analysis library. 
