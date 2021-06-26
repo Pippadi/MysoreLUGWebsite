@@ -1,3 +1,8 @@
+@media (max-width: 600px) {
+	main {width: device-width;}
+	img, .article-code { max-width: 100%; height: auto; }
+}
+
 html {
 	color: #ababab;
 	min-height: 100%;
