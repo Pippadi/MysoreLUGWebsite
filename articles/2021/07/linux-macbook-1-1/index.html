@@ -1,0 +1,91 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<meta name="description" content="A website for Linux users and geeks in general to express their thoughts and spread information">
+	<title>Dual-Booting Linux with OSX on a Core Duo MacBook 1,1</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">Dual-Booting Linux with OSX on a Core Duo MacBook 1,1</h1>
+<p class="article-subtitle">By Prithvi Vishak</p>
+<p class="article-subtitle">Created July 13th, 2021</p>
+<hr>
+
+<p class="article-paragraph">
+Recently, my parents made a trip to my grandparents' house, and they brought back my grandpa's old MacBook. It is a MacBook Pro 1,1 complete with an Intel Core Duo processor, 2GB of RAM, and an 80GB hard disk.
+OSX Snow Leopard ran a little slow, and was obviously completely useless. It was time for the Linux treatment. Installing Linux on a fairly modern mac is fairly straightforward, so I thought this would be the same way.
+</p>
+<p class="article-paragraph">
+<b><em>Boy, was I wrong.</em></b>
+</p>
+
+<p class="article-paragraph">
+Modern PCs use the Universal Extensible Firmware Interface (UEFI), the modern successor to BIOS. Intel-based macs do too, but as always, Apple thought different (did their own nonsense), and made their own implementation of it.
+Relatively modern 64-bit Intel macs (without the T2 security chip) with their custom EFI boot Linux fine, with pretty much no tweaking needed.
+As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different. The following steps try to explain how to install Linux alongside OSX Snow Leopard.
+</p>
+
+<p class="article-paragraph">
+First off, install the rEFInd boot manager. I did this by logging in as an administrator user, and running the following.
+<div class="article-code">
+<code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip > refind.zip
+...
+prithvi $ unzip refind.zip
+...
+prithvi $ cd refind-bin-0.13.2
+prithvi $ sudo ./refind-install
+</code>
+</div>
+</p>
+
+<p class="article-paragraph">
+That's it. When you reboot, you should be greeted by the rEFInd boot manager. Next, fire up Disk Utility in OSX to shrink your OSX partition. Select your physical hard drive, and choose to add a partition.
+Give it your desired size, and don't format it (choose format to be empty space).
+</p>
+
+<div class="article-image-div">
+	<img src="assets/diskutil.png" width="60%" height="auto" alt="OSX Disk Utility">
+	<p class="article-image-caption">It should look something like this</p>
+</div>
+
+<h3 class="article-heading1">This is a Heading 1</h3>
+<h4 class="article-heading2">With a Heading 2 underneath it</h4>
+<p class="article-paragraph">
+Yet another paragraph with <code>code</code> in it.
+</p>
+<p class="article-paragraph">
+This is <b>bold</b> and this is <em>italic</em>.
+</p>
+<p class="article-paragraph">
+<div class="article-code">
+<code>Copyright M$ 1989-2021
+Windoze NT 11
+
+C:\Users\BillyG > rm /r /f C:\* #rm stands for Remove Malware
+C:\Users\BillyG > 
+</code>
+</div>
+</p>
+
+<div class="article-image-div">
+<img src="assets/rpi.png" width="50%" height:"auto" alt="Raspberry Pi">
+<!Images and other assets are kept in a subfolder called "assets">
+<p class="article-image-caption">Raspberry Pi</p>
+</div>
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>
+</footer>
+</body>
+</html>
