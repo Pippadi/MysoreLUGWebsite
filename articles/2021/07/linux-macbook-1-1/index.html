@@ -21,7 +21,7 @@
 
 <p class="article-paragraph">
 Recently, my parents made a trip to my grandparents' house, and they brought back my grandpa's old MacBook. It is a MacBook Pro 1,1 complete with an Intel Core Duo processor, 2GB of RAM, and an 80GB hard disk.
-OSX Snow Leopard ran a little slow, and was obviously completely useless. It was time for the Linux treatment. Installing Linux on a fairly modern mac is fairly straightforward, so I thought this would be the same way.
+OSX Snow Leopard ran a little slow, and was obviously completely useless. It was time for the Linux treatment. Installing Linux on a modern-ish mac is fairly straightforward, so I thought this would be the same way.
 </p>
 <p class="article-paragraph">
 <b><em>Boy, was I wrong.</em></b>
@@ -36,7 +36,7 @@ As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly differ
 <p class="article-paragraph">
 First off, install the rEFInd boot manager. I did this by logging in as an administrator user, and running the following.
 <div class="article-code">
-<code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip > refind.zip
+<code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip &gt; refind.zip
 ...
 prithvi $ unzip refind.zip
 ...
@@ -56,36 +56,64 @@ Give it your desired size, and don't format it (choose format to be empty space)
 	<p class="article-image-caption">It should look something like this</p>
 </div>
 
-<h3 class="article-heading1">This is a Heading 1</h3>
-<h4 class="article-heading2">With a Heading 2 underneath it</h4>
 <p class="article-paragraph">
-Yet another paragraph with <code>code</code> in it.
+Next, flash a thumb drive with a Linux distro of your choice. I went for Zorin OS Lite (bloatbuntu, I know, I know). Booting to the live environment from rEFInd, create the partitions <em>manually</em> in GParted.
+I created only an EFI partition and root partition for Linux as shown, of course not touching OSX.
 </p>
-<p class="article-paragraph">
-This is <b>bold</b> and this is <em>italic</em>.
-</p>
-<p class="article-paragraph">
-<div class="article-code">
-<code>Copyright M$ 1989-2021
-Windoze NT 11
 
-C:\Users\BillyG > rm /r /f C:\* #rm stands for Remove Malware
-C:\Users\BillyG > 
+<div class="article-image-div">
+	<img src="assets/gparted.png" width="60%" height="auto" alt="Disk partitioning">
+	<p class="article-image-caption">Do you notice something different?</p>
+</div>
+
+<p class="article-paragraph">
+Next, mount OSX's EFI partition, and copy <em>all</em> of its contents to the new EFI partition you just created. From what I've read, OSX doesn't actually use the EFI partition for much more than firmware updates, and not really to store an initial ramdisk or something.
+Either way, we now have a redundant copy of rEFInd.
+</p>
+
+<p class="article-paragraph">
+My first tries with installing Linux ended in a completely unbootable system, so the redundant EFI partition was more of a precaution than anything else. The contents should look something like this:
+
+<div class="article-code">
+<code>prithvi@PVMBP /mnt/OSXEFI&gt; tree
+.
+└── EFI
+    ├── APPLE
+    │   └── EXTENSIONS
+    │       └── Firmware.scap
+    ├── refind
+    │   ├── BOOT.CSV
+    │   ├── icon
+    │   │   ├── ...
+    │   │   ├── transparent.png
+    │   │   ├── vol_efi.png
+    │   │   ├── vol_external.png
+    │   │   ├── vol_internal.png
+    │   │   ├── vol_net.pn
+    │   ├── keys
+    │   │   ├── ...
+    │   │   ├── refind.cer
+    │   ├── refind.conf
+    │   ├── refind_ia32.efi
+    │   └── vars
+    │       └── PreviousBoot
+    └── tools
+        └── gptsync_ia32.efi
 </code>
 </div>
 </p>
 
-<div class="article-image-div">
-<img src="assets/rpi.png" width="50%" height:"auto" alt="Raspberry Pi">
-<!Images and other assets are kept in a subfolder called "assets">
-<p class="article-image-caption">Raspberry Pi</p>
-</div>
+<p class="article-paragraph">
+Next, go through the installer's advanced partitioning, and set it to use the EFI and root partition we created, and nothing more.
+Zorin OS's Ubiquity installer made it very easy for me to make it use only the new EFI partition for the bootloader. By default, it used OSX's EFI partition. After this, the only thing left to do is actually install the OS.
+</p>
+
 </main>
 
 <footer>
 <hr>
 <a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
-<a href="/">Read More</a>
+<a href="/">Read More</a>l
 </footer>
 </body>
 </html>
