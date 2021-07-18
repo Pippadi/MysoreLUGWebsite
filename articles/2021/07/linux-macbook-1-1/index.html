@@ -30,11 +30,16 @@ OSX Snow Leopard ran a little slow, and was obviously completely useless. It was
 <p class="article-paragraph">
 Modern PCs use the Universal Extensible Firmware Interface (UEFI), the modern successor to BIOS. Intel-based macs do too, but as always, Apple thought different (did their own nonsense), and made their own implementation of it.
 Relatively modern 64-bit Intel macs (without the T2 security chip) with their custom EFI boot Linux fine, with pretty much no tweaking needed.
-As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different. The following steps try to explain how to install Linux alongside OSX Snow Leopard.
+As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different.
+</p>
+<p class="article-paragraph">
+This article from <a href="https://astrofloyd.wordpress.com/2014/01/14/linux-only-installation-on-2006-macbook-using-refind/">AstroFloyd</a> worked great for a lot of people, but unfortunately not for me.
+I couldn't get Linux to install without OSX, but I wanted to keep OSX around anyway, in case I'd ever need it. And dual-booting is always cooler than single-booting. Anyway, here are my steps to get Linux working.
 </p>
 
+
 <p class="article-paragraph">
-First off, install the rEFInd boot manager. I did this by logging in as an administrator user, and running the following.
+First off, install the rEFInd boot manager. I did this by logging in as an administrator user, and running the following (OSX doesn't seem to have <code>wget</code>).
 <div class="article-code">
 <code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip &gt; refind.zip
 ...
@@ -62,7 +67,7 @@ I created only an EFI partition and root partition for Linux as shown, of course
 </p>
 
 <div class="article-image-div">
-	<img src="assets/gparted.png" width="60%" height="auto" alt="Disk partitioning">
+	<img src="assets/gparted.png" width="80%" height="auto" alt="Disk partitioning">
 	<p class="article-image-caption">Do you notice something different?</p>
 </div>
 
@@ -104,9 +109,27 @@ My first tries with installing Linux ended in a completely unbootable system, so
 </p>
 
 <p class="article-paragraph">
+If you don't have the ability to install OSX, I hope this information is useful to you in perhaps creating a thumb drive with rEFInd which you can boot from. I tried copying this to a GPT FAT32 thumb drive, but it didn't work. Maybe there were some flags that I needed to set. I don't know.
+</p>
+
+<p class="article-paragraph">
 Next, go through the installer's advanced partitioning, and set it to use the EFI and root partition we created, and nothing more.
 Zorin OS's Ubiquity installer made it very easy for me to make it use only the new EFI partition for the bootloader. By default, it used OSX's EFI partition. After this, the only thing left to do is actually install the OS.
 </p>
+<p class="article-paragraph">
+That's about it to make it boot. Make sure you're okay with accidentally nuking OSX and reinstalling it.
+Reinstalling OSX was actually what took me the most time. After I installed rEFInd the first time, I tried installing openSUSE, which messed with OSX's EFI partition, leaving the system unbootable.
+We had some Snow Leopard DVDs lying around, but the optical drive on the old mac was long dead. Thankfully, we had another mac with a working optical drive, from which I could use Disk Utility to flash the contents of the DVD to a thumb drive.
+Booting and installing from the thumb drive worked fine.
+</p>
+
+<h3 class="article-heading1">Post-Installation</h3>
+<p class="article-paragraph">
+Most things worked out of the box for me on Zorin OS Lite 15.3 (Ubuntu 18.04 LTS), including display and keyboard brightness controls, keyboard and trackpad, WiFi, bluetooth, speakers, and microphone.
+The first thing that didn't work was the iSight webcam. I followed <a href="https://unlockforus.com/linux-mint-17-2-rafaela-on-macbook-41-late-2007-isight-webcam/">this tutorial</a>, which worked great for me.
+The only thing that doesn't work right now is suspend. If I get it working, I'll edit this article.
+</p>
+
 
 </main>
 
