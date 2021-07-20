@@ -1,0 +1,121 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<meta name="description" content="A website for Linux users and geeks in general to express their thoughts and spread information">
+	<title>Dual-Booting Linux with OSX on a Core Duo MacBook 1,1</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">Dual-Booting Linux with OSX on a Core Duo MacBook 1,1</h1>
+<p class="article-subtitle">By Prithvi Vishak</p>
+<p class="article-subtitle">Created July 13th, 2021</p>
+<hr>
+
+<p class="article-paragraph">
+Recently, my parents made a trip to my grandparents' house, and they brought back my grandpa's old MacBook. It is a MacBook Pro 1,1 complete with an Intel Core Duo processor, 2GB of RAM, and an 80GB hard disk.
+OSX Snow Leopard ran a little slow, and was obviously completely useless. It was time for the Linux treatment. Installing Linux on a modern-ish mac is fairly straightforward, so I thought this would be the same way.
+</p>
+<p class="article-paragraph">
+<b><em>Boy, was I wrong.</em></b>
+</p>
+
+<p class="article-paragraph">
+Modern PCs use the Universal Extensible Firmware Interface (UEFI), the modern successor to BIOS. Intel-based macs do too, but as always, Apple thought different (did their own nonsense), and made their own implementation of it.
+Relatively modern 64-bit Intel macs (without the T2 security chip) with their custom EFI boot Linux, even the live disks, just fine with pretty much no tweaking needed.
+As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different. It just won't boot Linux from a thumb drive.
+</p>
+<p class="article-paragraph">
+This article from <a href="https://astrofloyd.wordpress.com/2014/01/14/linux-only-installation-on-2006-macbook-using-refind/">AstroFloyd</a> worked great for a lot of people, but unfortunately not for me.
+I couldn't get Linux to install without OSX, but I wanted to keep OSX around anyway, in case I'd ever need it. And dual-booting is always cooler than single-booting. Anyway, here are my steps to get Linux working.
+</p>
+
+
+<p class="article-paragraph">
+First off, install the <a href="https://www.rodsbooks.com/refind/">rEFInd boot manager</a>. I did this by logging in as an administrator user, and running the following (OSX doesn't seem to have <code>wget</code>).
+<div class="article-code">
+<code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip &gt; refind.zip
+...
+prithvi $ unzip refind.zip
+...
+prithvi $ cd refind-bin-0.13.2
+prithvi $ sudo ./refind-install
+</code>
+</div>
+</p>
+
+<p class="article-paragraph">
+That's it. When you reboot, you should be greeted by the rEFInd boot manager. Next, fire up Disk Utility in OSX to shrink your OSX partition. Select your physical hard drive, and choose to add a partition.
+Give it your desired size, and don't format it (choose format to be empty space).
+</p>
+
+<div class="article-image-div">
+	<img src="assets/diskutil.png" width="60%" height="auto" alt="OSX Disk Utility">
+	<p class="article-image-caption">It should look something like this</p>
+</div>
+
+<p class="article-paragraph">
+Next, flash a thumb drive with a Linux distro of your choice. I went for Zorin OS Lite (bloatbuntu, I know, I know). Booting to the live environment from rEFInd, create the partitions <em>manually</em> in GParted.
+I created only an EFI partition and root partition for Linux as shown, of course not touching OSX.
+</p>
+
+<div class="article-image-div">
+	<img src="assets/gparted.png" width="80%" height="auto" alt="Disk partitioning">
+	<p class="article-image-caption">Do you notice something different?</p>
+</div>
+
+<p class="article-paragraph">
+Next, go through the installer's advanced partitioning, and set it to use the EFI and root partition we created, and nothing more.
+Zorin OS's Ubiquity installer made it very easy for me to make it use only the new EFI partition for the bootloader. By default, it used OSX's EFI partition. After this, the only thing left to do is actually install the OS.
+</p>
+<p class="article-paragraph">
+Oddly enough, it did not use that EFI partition for anything. It seems to boot in BIOS mode with the mac's Compatibility Support Module (CSM), which emulates BIOS.
+Apparently, this is used for installing Windows with Bootcamp, which explains why I see an entry called "Windows" in the boot menu (not rEFInd), which boots Linux.
+I don't know if I actually need it at this point. I'll update the article when I try installing another OS. But for now, I've kept it for the purposes of messing around.
+</p>
+
+<p class="article-paragraph">
+That's about it to make it boot. Make sure you're okay with accidentally nuking OSX and reinstalling it.
+Reinstalling OSX was actually what took me the most time. After I installed rEFInd the first time, I tried installing openSUSE, which messed with OSX's EFI partition, leaving the system unbootable.
+We had some Snow Leopard DVDs lying around, but the optical drive on the old mac was long dead. Thankfully, we had another mac with a working optical drive, from which I could use Disk Utility to flash the contents of the DVD to a thumb drive.
+Booting and installing from the thumb drive worked fine. If you need it and live close by, I'd be happy to lend it to you :)
+</p>
+
+<p class="article-paragraph">
+Most things worked out of the box for me on Zorin OS Lite 15.3 (Ubuntu 18.04 LTS), including display and keyboard brightness controls, keyboard and trackpad, WiFi, bluetooth, speakers, and microphone.
+I can't say much about the battery, because mine has been long-dead.
+The first thing that didn't work on Linux was the iSight webcam. I followed <a href="https://unlockforus.com/linux-mint-17-2-rafaela-on-macbook-41-late-2007-isight-webcam/">this tutorial</a>, which worked great for me.
+The only thing that doesn't work right now is suspend. If I get it working, I'll edit this article.
+</p>
+
+<p class="article-paragraph">
+My problems didn't end there, unfortunately. On my third day of trying to get Linux to work, I tried starting the mac as usual. I heard the optical drive start and hard disk spin up.
+Immediately after, I heard a click from the hard disk, and saw the activity/sleep light turn off. I eventually got it to boot by pressing-and-holding the power button till I saw the light flicker and heard the unit beep.
+This happens the first time I try to start the computer in a day. I have no idea why this is happening, but as long as it continues to work, I'm happy. SMC and NVRAM resets, even hard disk swaps, don't seem to help.
+</p>
+<p class="article-paragraph">
+<a href="https://www.rodsbooks.com">Roderick Smith</a>'s work is very detailed and informative. Not to mention that he created rEFInd, if you didn't notice.
+His articles helped me understand a lot about the boot process and mac-related quirks.
+He has a tutorial that describes how to boot Linux with EFI on an old mac, among other things. If you want to dig deeper, his website is the place to go.
+</p>
+<p class="article-paragraph">
+I continue to experiment with this machine (I say "this" machine because I've used it to write most of this article), trying to get it to boot Linux from a thumb drive directly, without rEFInd or the tool used by AstroFloyd.
+That's all for now. I hope this article was vaguely useful, even though there's a dearth of better-researched, less rambling articles out there.
+</p>
+
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>l
+</footer>
+</body>
+</html>
