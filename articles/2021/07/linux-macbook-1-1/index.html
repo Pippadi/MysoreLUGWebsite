@@ -29,8 +29,8 @@ OSX Snow Leopard ran a little slow, and was obviously completely useless. It was
 
 <p class="article-paragraph">
 Modern PCs use the Universal Extensible Firmware Interface (UEFI), the modern successor to BIOS. Intel-based macs do too, but as always, Apple thought different (did their own nonsense), and made their own implementation of it.
-Relatively modern 64-bit Intel macs (without the T2 security chip) with their custom EFI boot Linux fine, with pretty much no tweaking needed.
-As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different.
+Relatively modern 64-bit Intel macs (without the T2 security chip) with their custom EFI boot Linux, even the live disks, just fine with pretty much no tweaking needed.
+As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different. It just won't boot Linux from a thumb drive.
 </p>
 <p class="article-paragraph">
 This article from <a href="https://astrofloyd.wordpress.com/2014/01/14/linux-only-installation-on-2006-macbook-using-refind/">AstroFloyd</a> worked great for a lot of people, but unfortunately not for me.
@@ -76,7 +76,7 @@ Next, go through the installer's advanced partitioning, and set it to use the EF
 Zorin OS's Ubiquity installer made it very easy for me to make it use only the new EFI partition for the bootloader. By default, it used OSX's EFI partition. After this, the only thing left to do is actually install the OS.
 </p>
 <p class="article-paragraph">
-Oddly enough, it did not use that EFI partition for anything. It seems to boot in BIOS mode with the mac's Compatibility Support Module (emulating BIOS).
+Oddly enough, it did not use that EFI partition for anything. It seems to boot in BIOS mode with the mac's Compatibility Support Module (CSM), which emulates BIOS.
 Apparently, this is used for installing Windows with Bootcamp, which explains why I see an entry called "Windows" in the boot menu (not rEFInd), which boots Linux.
 I don't know if I actually need it at this point. I'll update the article when I try installing another OS. But for now, I've kept it for the purposes of messing around.
 </p>
@@ -96,7 +96,7 @@ The only thing that doesn't work right now is suspend. If I get it working, I'll
 </p>
 
 <p class="article-paragraph">
-On my third day of trying to get Linux to work, I tried starting the mac as usual. I heard the optical drive start and hard disk spin up.
+My problems didn't end there, unfortunately. On my third day of trying to get Linux to work, I tried starting the mac as usual. I heard the optical drive start and hard disk spin up.
 Immediately after, I heard a click from the hard disk, and saw the activity/sleep light turn off. I eventually got it to boot by pressing-and-holding the power button till I saw the light flicker and heard the unit beep.
 This happens the first time I try to start the computer in a day. I have no idea why this is happening, but as long as it continues to work, I'm happy. SMC and NVRAM resets, even hard disk swaps, don't seem to help.
 </p>
@@ -107,7 +107,7 @@ He has a tutorial that describes how to boot Linux with EFI on an old mac, among
 </p>
 <p class="article-paragraph">
 I continue to experiment with this machine (I say "this" machine because I've used it to write most of this article), trying to get it to boot Linux from a thumb drive directly, without rEFInd or the tool used by AstroFloyd.
-That's all for now. I hope this article was vaguely useful, even though there's a dearth of better-researched information out there.
+That's all for now. I hope this article was vaguely useful, even though there's a dearth of better-researched, less rambling articles out there.
 </p>
 
 </main>
