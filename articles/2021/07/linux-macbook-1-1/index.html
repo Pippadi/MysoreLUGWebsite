@@ -39,7 +39,7 @@ I couldn't get Linux to install without OSX, but I wanted to keep OSX around any
 
 
 <p class="article-paragraph">
-First off, install the rEFInd boot manager. I did this by logging in as an administrator user, and running the following (OSX doesn't seem to have <code>wget</code>).
+First off, install the <a href="https://www.rodsbooks.com/refind/">rEFInd boot manager</a>. I did this by logging in as an administrator user, and running the following (OSX doesn't seem to have <code>wget</code>).
 <div class="article-code">
 <code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip &gt; refind.zip
 ...
@@ -72,64 +72,43 @@ I created only an EFI partition and root partition for Linux as shown, of course
 </div>
 
 <p class="article-paragraph">
-Next, mount OSX's EFI partition, and copy <em>all</em> of its contents to the new EFI partition you just created. From what I've read, OSX doesn't actually use the EFI partition for much more than firmware updates, and not really to store an initial ramdisk or something.
-Either way, we now have a redundant copy of rEFInd.
-</p>
-
-<p class="article-paragraph">
-My first tries with installing Linux ended in a completely unbootable system, so the redundant EFI partition was more of a precaution than anything else. The contents should look something like this:
-
-<div class="article-code">
-<code>prithvi@PVMBP /mnt/OSXEFI&gt; tree
-.
-└── EFI
-    ├── APPLE
-    │   └── EXTENSIONS
-    │       └── Firmware.scap
-    ├── refind
-    │   ├── BOOT.CSV
-    │   ├── icon
-    │   │   ├── ...
-    │   │   ├── transparent.png
-    │   │   ├── vol_efi.png
-    │   │   ├── vol_external.png
-    │   │   ├── vol_internal.png
-    │   │   ├── vol_net.pn
-    │   ├── keys
-    │   │   ├── ...
-    │   │   ├── refind.cer
-    │   ├── refind.conf
-    │   ├── refind_ia32.efi
-    │   └── vars
-    │       └── PreviousBoot
-    └── tools
-        └── gptsync_ia32.efi
-</code>
-</div>
-</p>
-
-<p class="article-paragraph">
-If you don't have the ability to install OSX, I hope this information is useful to you in perhaps creating a thumb drive with rEFInd which you can boot from. I tried copying this to a GPT FAT32 thumb drive, but it didn't work. Maybe there were some flags that I needed to set. I don't know.
-</p>
-
-<p class="article-paragraph">
 Next, go through the installer's advanced partitioning, and set it to use the EFI and root partition we created, and nothing more.
 Zorin OS's Ubiquity installer made it very easy for me to make it use only the new EFI partition for the bootloader. By default, it used OSX's EFI partition. After this, the only thing left to do is actually install the OS.
 </p>
 <p class="article-paragraph">
+Oddly enough, it did not use that EFI partition for anything. It seems to boot in BIOS mode with the mac's Compatibility Support Module (emulating BIOS).
+Apparently, this is used for installing Windows with Bootcamp, which explains why I see an entry called "Windows" in the boot menu (not rEFInd), which boots Linux.
+I don't know if I actually need it at this point. I'll update the article when I try installing another OS. But for now, I've kept it for the purposes of messing around.
+</p>
+
+<p class="article-paragraph">
 That's about it to make it boot. Make sure you're okay with accidentally nuking OSX and reinstalling it.
 Reinstalling OSX was actually what took me the most time. After I installed rEFInd the first time, I tried installing openSUSE, which messed with OSX's EFI partition, leaving the system unbootable.
 We had some Snow Leopard DVDs lying around, but the optical drive on the old mac was long dead. Thankfully, we had another mac with a working optical drive, from which I could use Disk Utility to flash the contents of the DVD to a thumb drive.
-Booting and installing from the thumb drive worked fine.
+Booting and installing from the thumb drive worked fine. If you need it and live close by, I'd be happy to lend it to you :)
 </p>
 
-<h3 class="article-heading1">Post-Installation</h3>
 <p class="article-paragraph">
 Most things worked out of the box for me on Zorin OS Lite 15.3 (Ubuntu 18.04 LTS), including display and keyboard brightness controls, keyboard and trackpad, WiFi, bluetooth, speakers, and microphone.
-The first thing that didn't work was the iSight webcam. I followed <a href="https://unlockforus.com/linux-mint-17-2-rafaela-on-macbook-41-late-2007-isight-webcam/">this tutorial</a>, which worked great for me.
+I can't say much about the battery, because mine has been long-dead.
+The first thing that didn't work on Linux was the iSight webcam. I followed <a href="https://unlockforus.com/linux-mint-17-2-rafaela-on-macbook-41-late-2007-isight-webcam/">this tutorial</a>, which worked great for me.
 The only thing that doesn't work right now is suspend. If I get it working, I'll edit this article.
 </p>
 
+<p class="article-paragraph">
+On my third day of trying to get Linux to work, I tried starting the mac as usual. I heard the optical drive start and hard disk spin up.
+Immediately after, I heard a click from the hard disk, and saw the activity/sleep light turn off. I eventually got it to boot by pressing-and-holding the power button till I saw the light flicker and heard the unit beep.
+This happens the first time I try to start the computer in a day. I have no idea why this is happening, but as long as it continues to work, I'm happy. SMC and NVRAM resets, even hard disk swaps, don't seem to help.
+</p>
+<p class="article-paragraph">
+<a href="https://www.rodsbooks.com">Roderick Smith</a>'s work is very detailed and informative. Not to mention that he created rEFInd, if you didn't notice.
+His articles helped me understand a lot about the boot process and mac-related quirks.
+He has a tutorial that describes how to boot Linux with EFI on an old mac, among other things. If you want to dig deeper, his website is the place to go.
+</p>
+<p class="article-paragraph">
+I continue to experiment with this machine (I say "this" machine because I've used it to write most of this article), trying to get it to boot Linux from a thumb drive directly, without rEFInd or the tool used by AstroFloyd.
+That's all for now. I hope this article was vaguely useful, even though there's a dearth of better-researched information out there.
+</p>
 
 </main>
 
