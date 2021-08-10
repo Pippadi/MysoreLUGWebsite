@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 sitemapfile=$1
 today=$(date '+%F')
