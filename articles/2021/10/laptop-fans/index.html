@@ -1,0 +1,66 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<meta name="description" content="A website for Linux users and geeks in general to express their thoughts and spread information">
+	<title>A Little on Laptop Fans</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">A Little on Laptop Fans</h1>
+<p class="article-subtitle">By Prithvi Vishak</p>
+<p class="article-subtitle">Created October 4th, 2021</p>
+<hr>
+
+<p class="article-paragraph">
+I was recently trying to fix an old Sony Vaio laptop. One of its issues was a nonfunctional fan. I couldn't find much laptop fan-specific documentation online, so I thought I'd write a blurb about my experience with one.
+</p>
+
+<p class="article-paragraph">
+My initial thought was that the fan was dead, since it is prone to mechanical failure anyway. Just on a whim, though, I thought I'd try to wire it up separately and see if it worked.
+This fan, like many other laptop fans, had three wires going to it.
+After doing some reading up on desktop fans, I found that black and red are ground and supply voltage as usual, and yellow is for a tachometer signal from the fan for feedback to the fan controller.
+Those that know their desktop fans will know that there is also a four-pin variety, that has an additional wire for a PWM signal to the fan for speed control.
+</p>
+
+<div class="article-image-div">
+<img src="assets/thinkpad_fan.jpg" width="50%" height:"auto" alt="Raspberry Pi">
+<p class="article-image-caption">The fan from an old ThinkPad, with a similar wiring colorscheme</p>
+</div>
+
+<p class="article-paragraph">
+So techincally, all I had to do to get the fan to spin was apply 5V to the red and black pins. Sure enough, it worked fine. I could even get a nice square wave from the tachometer. Evidently, the fan controller on the motherboard was at fault.
+</p>
+
+<p class="article-paragraph">
+There, I found that the yellow line was pulled to around 4.5V unloaded, dropping to a few millivolts when loaded (sort of expected), and the red line was outputting a consistent 1.5V square wave.
+No wonder the fan wasn't spinning. I speculate that the square wave was a PWM signal from the fan controller, which is supposed to go to the gate of a FET or something that drives the fan with a higher current.
+I wasn't in the mood to hunt for a teeny tiny SMD transistor that I had to burn my fingers to replace, meaning I'd have to power the fan some other way.
+</p>
+<p class="article-paragraph">
+I found that the fan consumed about 150mA at 5V continous, which is comfortably within the 500mA that a to-spec USB 2.0 port can deliver.
+I considered soldering the power wires of the fan to the power lines of a USB port inside, but remembered that inrush current for the motor in the fan would probably be a lot more than 150mA.
+Sure, they'll have some kind of overcurrent protection and capacitors to deliver short bursts of current, but I wasn't willing to bank on it.
+So instead, I burnt a hole through the case and soldered a micro USB port to the power wires, so that the fan could be plugged into a phone charger, which should be able to handle high currents.
+</p>
+
+<div class="article-image-div">
+<img src="assets/hacked_usb.jpg" width="50%" height:"auto" alt="Raspberry Pi">
+<p class="article-image-caption">Take notes, kids. This is how real engineering's done.</p>
+</div>
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>
+</footer>
+</body>
+</html>
