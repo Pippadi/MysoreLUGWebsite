@@ -1,0 +1,103 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<meta name="description" content="A website for Linux users and geeks in general to express their thoughts and spread information">
+	<title>Sharing Your Screen as a Webcam on Linux</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">Sharing Your Screen as a Webcam</h1>
+<p class="article-subtitle">Prithvi Vishak</p>
+<p class="article-subtitle">Created November 27th, 2021</p>
+<hr>
+
+<p class="article-paragraph">
+Our school uses Microsoft Teams for online classes. Unfortunately, the IT admins blocked students from sharing their screens, to the dismay of both students and teachers.
+I worked around the problem by redirecting screen contents to webcam video.
+</p>
+
+<p class="article-paragraph">
+There seem to be many ways to do this, some easier than others. I had heard of <a href="https://obsproject.com/">OBS</a>, but didn't need a tool that big for regular old screen-sharing.
+After some hunting around the internet, I pieced together a script that uses the <a href="https://github.com/umlaeute/v4l2loopback"><code>v4l2loopback</code></a> kernel module and <a href="https://ffmpeg.org/"><code>ffmpeg</code></a> to redirect the desired screen space to a webcam.
+</p>
+
+<h3 class="article-heading1">My Script</h3>
+<p class="article-paragraph">
+That script can be found on <a href="https://github.com/Pippadi/ScreenToWebcam">GitHub</a>. To use it, install <code>v4l2loopback</code> and <code>ffmpeg</code>.
+Both should be available from your distro's official repositories. Keep in mind that the package names may be slightly different, and to run a search if it says that packages by those names are not available.
+Also install <code>git</code> if you want to clone the repository instead of downloading the <a href="https://github.com/Pippadi/ScreenToWebcam/archive/refs/heads/main.zip">zip from GitHub</a>.
+</p>
+<p class="article-paragraph">
+Once you have the script, launch a terminal and navigate to the folder that contains the script. Run it with your desired settings, then hit <code>Ctrl-C</code> to stop.
+<div class="article-code"><code>./ScreenToWebcam  [options] [values]
+E.g.:  ./ScreenToWebcam --mirror 1680x1050 1920x1080 <br>
+-m,--mirror: Flip webcam feed horizontally<br>
+-- Values --
+InputSize:  Required field
+            Size of the screen to be grabbed
+            '1680x1050' in example given
+OutputRes:  Optional field
+            Resolution the input will be scaled to in the dummy webcam output
+            Defaults to 1280x720</code></div>
+</p>
+
+<p class="article-paragraph">
+I run it like this, to capture 1920x1080 pixels:
+<div class="article-code"><code>./ScreenToWebcam.sh 1920x1080</code></div>
+</p>
+<p class="article-paragraph">
+Resolution is specified in the format <code>WIDTHxHEIGHT+WIDTH_OFFSET,HEIGHT_OFFSET</code>.
+If you have two 1920x1080 monitors side-by-side, and you want to capture the right one, you would do:
+<div class="article-code"><code>./ScreenToWebcam.sh 1920x1080+1920,0</code></div>
+</p>
+<p class="article-paragraph">
+The resolution of the dummy webcam is set by 1280x720 by default, as this is the highest resolution that Teams and a couple other applications seem to accept.
+The input screen size is scaled to the resolution of the dummy webcam, so if you are capturing an area with an aspect ratio different from 16:9, your webcam feed will appear stretched to fit the entire frame. You may want to set the output resolution to one with a matching aspect ratio.
+Additionally, if the captured portion of your screen has a higher resolution than 1280x720, text may appear small and illegible. It is advisable to increase the size of whatever you are sharing, or even set your monitor to 1280x720 resolution for the duration of your sharing.
+</p>
+<p class="article-paragraph">
+You will also be prompted for your password to run <code>modprobe</code> as root when starting and stopping the script, because the script instantiates the <code>v4l2loopback</code> kernel module at start and removes when stopped, <em>every time the script is run</em>. Also keep in mind that the script runs <em>only</em> on Xorg/X11, and not on Wayland.
+</p>
+
+<div class="article-image-div">
+	<img src="assets/webcam-preview.png" width="50%" height="auto" alt="ScreenToWebcam preview in Teams">
+	<p class="article-image-caption">This is <b>without</b> the <code>--mirror</code> flag in use. While the preview is shown mirrored here in Teams, people in meetings tell me that they see it <b>correctly</b>, and flipped when I use <code>--mirror</code>.</p>
+</div>
+
+<h3 class="article-heading1">Doing it yourself</h3>
+<p class="article-paragraph">
+As mentioned earlier, you need the <code>v4l2loopback</code> module to create a dummy webcam device. Then, we use <code>ffmpeg</code> with the <code>x11grab</code> device to grab a portion of our screen.
+You can instantiate <code>v4l2loopback</code> with <code>modprobe</code> every time before running ffmpeg like my script does, or you could <a href="https://askubuntu.com/questions/1245212/how-do-i-automatically-run-modprobe-v4l2loopback-on-boot">add an entry to /etc/modprobe.d</a>.
+</p>
+<p class="article-paragraph">
+Here's the command you would run before the script, to create a dummy webcam with the name <b>ScreenToWebcam</b> at <code>/dev/video10</code> (Keep in mind that this will remove any other instances of v4l2loopback you might have running, and assumes that you don't already have a webcam using <code>/dev/video10</code>):
+<div class="article-code"><code>sudo /sbin/modprobe v4l2loopback devices=1 exclusive_caps=1 card_label=ScreenToWebcam video_nr=10</code></div>
+</p>
+<p class="article-paragraph">
+And the <code>ffmpeg</code> command to grab a resolution of 1920x1080, at an offset of 1920x0 pixels from the top-left corner of the screen, with no mirroring:
+<div class="article-code"><code>ffmpeg -f x11grab -video_size 1920x1080 -i $DISPLAY+1920+0 -vf scale=1280x720,format=yuv420p -r 15 -c:a copy -f v4l2 /dev/video10</code></div>
+</p>
+<p class="article-paragraph">
+When you're done, hit <code>Ctrl-C</code> to terminate <code>ffmpeg</code>, and run
+<div class="article-code"><code>sudo /sbin/modprobe -r v4l2loopback</code></div>
+</p>
+<p class="article-paragraph">
+This is all the information I'll leave you with, since this is pretty much all I know. Feel free to refer to the <a href="https://github.com/Pippadi/ScreenToWebcam/blob/main/ScreenToWebcam.sh">script directly</a>. Happy hacking!
+</p>
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>
+</footer>
+</body>
+</html>
