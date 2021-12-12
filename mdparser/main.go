@@ -92,37 +92,26 @@ func main() {
 		line := scanner.Text()
 		words := strings.Split(line, " ")
 
-		const linkRegexp = `\((.+?)\)\[(.+?)\]`
-		m := regexp.MustCompile(linkRegexp)
+		m := regexp.MustCompile(`\((.+?)\)\[(.+?)\]`) // Links
 		line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
 
-		const shortCodeRegexp = "`([^`]+?)`"
-		m = regexp.MustCompile(shortCodeRegexp)
+		m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
 		line = m.ReplaceAllString(line, `<code>$1</code>`)
+
+		m = regexp.MustCompile("_(.+?)_") // Italics in _..._
+		line = m.ReplaceAllString(line, `<em>$1</em>`)
+
+		m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
+		line = m.ReplaceAllString(line, `<b>$1</b>`)
 
 		isHeading1, _ := regexp.MatchString("^###.+", line)
 
 		const SpecialCharacters = "_`()[]*"
-		inItalics, inBold := false, false
 		for i := 0; i < len(line); i++ {
 			chr := rune(line[i])
 			if chr == '\\' && strings.Contains(SpecialCharacters, string(line[i+1])) {
 				line = replaceCharAt(line, "", i)
 				i++
-			} else if chr == '_' {
-				if inItalics {
-					line = replaceCharAt(line, "</em>", i)
-				} else {
-					line = replaceCharAt(line, "<em>", i)
-				}
-				inItalics = !inItalics
-			} else if chr == '*' {
-				if inBold {
-					line = replaceCharAt(line, "</b>", i)
-				} else {
-					line = replaceCharAt(line, "<b>", i)
-				}
-				inBold = !inBold
 			}
 		}
 
