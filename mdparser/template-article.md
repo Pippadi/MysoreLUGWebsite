@@ -8,5 +8,8 @@ This is a paragraph.
 
 ### This is a subheading
 
-This is another paragraph.
+This *is* `another` \` _paragraph_.
 
+```
+This is code.
+```

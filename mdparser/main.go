@@ -55,6 +55,10 @@ func (h articleHeading) HTMLString() string {
 	return str
 }
 
+func replaceCharAt(str, toInsert string, index int) string {
+	return str[:index] + toInsert + str[index+1:]
+}
+
 func main() {
 	var heading = articleHeading{}
 	var html = header
@@ -82,15 +86,66 @@ func main() {
 	html = strings.Replace(html, "PageTitle", heading.Title, 1)
 
 	inParagraph := false
+	inCode := false
 	for scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Split(line, " ")
+
+		inShortCode, inItalics, inBold := false, false, false
+		const SpecialCharacters = "_`()[]*"
+		for p, word := range words {
+			for i := 0; i < len(word); i++ {
+				chr := rune(word[i])
+				if chr == '\\' && strings.Contains(SpecialCharacters, string(word[i+1])) {
+					word = replaceCharAt(word, "", i)
+					i++
+				} else if chr == '`' && word != "```" {
+					if inShortCode {
+						word = replaceCharAt(word, "</code>", i)
+					} else {
+						word = replaceCharAt(word, "<code>", i)
+					}
+					inShortCode = !inShortCode
+				} else if chr == '_' {
+					if inItalics {
+						word = replaceCharAt(word, "</em>", i)
+					} else {
+						word = replaceCharAt(word, "<em>", i)
+					}
+					inItalics = !inItalics
+				} else if chr == '*' {
+					if inBold {
+						word = replaceCharAt(word, "</b>", i)
+					} else {
+						word = replaceCharAt(word, "<b>", i)
+					}
+					inBold = !inBold
+				}
+				words[p] = word
+			}
+		}
+		line = ""
+		for _, word := range words[:len(words)-1] {
+			line += word + " "
+		}
+		line += words[len(words)-1]
 
 		if line == "" && inParagraph {
 			html += "</p>\n"
 			inParagraph = false
 		} else if words[0] == "###" {
 			html += "<h3 class=\"article-heading1\">" + line[4:] + "</h3>\n"
+		} else if words[0] == "```" {
+			if inCode {
+				html = html[:len(html)-1] + "</code></div>\n"
+			} else {
+				if !inParagraph {
+					html += "\n<p class=\"article-paragraph\">\n"
+					inParagraph = true
+				}
+				html += `<div class="article-code"><code>`
+			}
+			inCode = !inCode
 		} else if words[0] == "---" {
 			html += "<hr>\n"
 		} else if line != "" {
@@ -101,6 +156,7 @@ func main() {
 			html += line + "\n"
 		}
 	}
+
 	html += footer
 
 	fmt.Println(html)
