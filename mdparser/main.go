@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"strings"
+	"regexp"
 )
 
 func checkError(err error) {
@@ -91,49 +92,44 @@ func main() {
 		line := scanner.Text()
 		words := strings.Split(line, " ")
 
-		inShortCode, inItalics, inBold := false, false, false
+		const linkRegexp = `\((.+?)\)\[(.+?)\]`
+		m := regexp.MustCompile(linkRegexp)
+		line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
+
+		const shortCodeRegexp = "`([^`]+?)`"
+		m = regexp.MustCompile(shortCodeRegexp)
+		line = m.ReplaceAllString(line, `<code>$1</code>`)
+
+		isHeading1, _ := regexp.MatchString("^###.+", line)
+
 		const SpecialCharacters = "_`()[]*"
-		for p, word := range words {
-			for i := 0; i < len(word); i++ {
-				chr := rune(word[i])
-				if chr == '\\' && strings.Contains(SpecialCharacters, string(word[i+1])) {
-					word = replaceCharAt(word, "", i)
-					i++
-				} else if chr == '`' && word != "```" {
-					if inShortCode {
-						word = replaceCharAt(word, "</code>", i)
-					} else {
-						word = replaceCharAt(word, "<code>", i)
-					}
-					inShortCode = !inShortCode
-				} else if chr == '_' {
-					if inItalics {
-						word = replaceCharAt(word, "</em>", i)
-					} else {
-						word = replaceCharAt(word, "<em>", i)
-					}
-					inItalics = !inItalics
-				} else if chr == '*' {
-					if inBold {
-						word = replaceCharAt(word, "</b>", i)
-					} else {
-						word = replaceCharAt(word, "<b>", i)
-					}
-					inBold = !inBold
+		inItalics, inBold := false, false
+		for i := 0; i < len(line); i++ {
+			chr := rune(line[i])
+			if chr == '\\' && strings.Contains(SpecialCharacters, string(line[i+1])) {
+				line = replaceCharAt(line, "", i)
+				i++
+			} else if chr == '_' {
+				if inItalics {
+					line = replaceCharAt(line, "</em>", i)
+				} else {
+					line = replaceCharAt(line, "<em>", i)
 				}
-				words[p] = word
+				inItalics = !inItalics
+			} else if chr == '*' {
+				if inBold {
+					line = replaceCharAt(line, "</b>", i)
+				} else {
+					line = replaceCharAt(line, "<b>", i)
+				}
+				inBold = !inBold
 			}
 		}
-		line = ""
-		for _, word := range words[:len(words)-1] {
-			line += word + " "
-		}
-		line += words[len(words)-1]
 
 		if line == "" && inParagraph {
 			html += "</p>\n"
 			inParagraph = false
-		} else if words[0] == "###" {
+		} else if isHeading1 {
 			html += "<h3 class=\"article-heading1\">" + line[4:] + "</h3>\n"
 		} else if words[0] == "```" {
 			if inCode {
@@ -157,6 +153,9 @@ func main() {
 		}
 	}
 
+	if inParagraph {
+		html += "</p>\n"
+	}
 	html += footer
 
 	fmt.Println(html)
