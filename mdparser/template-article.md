@@ -8,7 +8,7 @@ This is a paragraph.
 
 ### This is a subheading
 
-This *is* `another` \` _paragraph_.
+_This_ *is* `another` \` \_ _paragraph_.
 
 ```
 This is code.
