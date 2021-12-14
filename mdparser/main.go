@@ -64,13 +64,13 @@ func main() {
 		if line != "" {
 			if line[:3] == "```" {
 				blk := ""
-				ended := false
-				for !ended && scanner.Scan() {
-					l := scanner.Text()
-					ended = l == "```"
+				scanner.Scan()
+				l := scanner.Text()
+				for l != "```" && scanner.Scan() {
 					blk += l + "\n"
+					l = scanner.Text()
 				}
-				template.AddCodeBlk(blk[:len(blk) - 5])
+				template.AddCodeBlk(blk[:len(blk) - 1])
 			} else if line[:3] == "---" {
 				template.AddHorizontalLine()
 			} else if line[:2] == "# " {
@@ -81,15 +81,30 @@ func main() {
 				template.AddHeading1(line[4:])
 			} else if line[:5] == "#### " {
 				template.AddHeading2(line[5:])
-			} else {
-				para := line
-				ended := false
-				for !ended && scanner.Scan() {
-					l := strings.Trim(scanner.Text(), " \t")
-					ended = l == ""
-					para += l + "\n"
+			} else if line[0] == '!' {
+				path := line[1:]
+				scanner.Scan()
+				opts := ""
+				l := strings.Trim(scanner.Text(), " \t")
+				captions := make([]string, 0)
+				for l != "" && scanner.Scan() {
+					if l[0] == '!' {
+						opts += l[1:] + " "
+					} else {
+						captions = append(captions, l)
+					}
+					l = strings.Trim(scanner.Text(), " \t")
 				}
-				template.AddParagraph(para[:len(para) - 1])
+				template.AddImage(path, opts, captions)
+			} else {
+				scanner.Scan()
+				para := line
+				l := strings.Trim(scanner.Text(), " \t")
+				for l != "" && scanner.Scan() {
+					para += l + "\n"
+					l = strings.Trim(scanner.Text(), " \t")
+				}
+				template.AddParagraph(para)
 			}
 		}
 	}

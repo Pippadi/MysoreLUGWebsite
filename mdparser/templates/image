@@ -1,0 +1,3 @@
+<div class="article-image-div">
+<img src={path} {opts}>
+{captions}</div>

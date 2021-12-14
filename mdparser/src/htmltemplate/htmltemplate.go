@@ -16,6 +16,8 @@ type HTMLTemplate struct {
 	horizontalLine string
 	heading1 string
 	heading2 string
+	image string
+	imageCaption string
 
 	html string
 	title string
@@ -33,26 +35,24 @@ func (h *HTMLTemplate) ReadTemplates(path string) {
 	content, err := ioutil.ReadFile(filepath.Join(path, "header"))
 	h.header = string(content)
 	h.html = h.header
-	checkError(err)
 	content, err = ioutil.ReadFile(filepath.Join(path, "footer"))
 	h.footer = string(content)
-	checkError(err)
 	content, err = ioutil.ReadFile(filepath.Join(path, "subtitle"))
 	h.subtitle= string(content)
-	checkError(err)
 	content, err = ioutil.ReadFile(filepath.Join(path, "para"))
 	h.para= string(content)
-	checkError(err)
 	content, err = ioutil.ReadFile(filepath.Join(path, "codeBlk"))
 	h.codeBlk= string(content)
-	checkError(err)
 	content, err = ioutil.ReadFile(filepath.Join(path, "horizontalLine"))
 	h.horizontalLine = string(content)
 	content, err = ioutil.ReadFile(filepath.Join(path, "heading1"))
 	h.heading1 = string(content)
-	checkError(err)
 	content, err = ioutil.ReadFile(filepath.Join(path, "heading2"))
 	h.heading2 = string(content)
+	content, err = ioutil.ReadFile(filepath.Join(path, "image"))
+	h.image = string(content)
+	content, err = ioutil.ReadFile(filepath.Join(path, "imageCaption"))
+	h.imageCaption = string(content)
 	checkError(err)
 }
 
@@ -83,6 +83,18 @@ func (h *HTMLTemplate) AddCodeBlk(aCodeBlk string) {
 
 func (h *HTMLTemplate) AddHorizontalLine() {
 	h.html += h.horizontalLine
+}
+
+func (h *HTMLTemplate) AddImage(path, opts string, captions []string) {
+	caps := ""
+	for _, cap := range captions {
+		caps += strings.Replace(h.imageCaption, "{}", cap, 1)
+	}
+	blk := h.image
+	blk = strings.Replace(blk, "{path}", path, 1)
+	blk = strings.Replace(blk, "{opts}", opts, 1)
+	blk = strings.Replace(blk, "{captions}", caps, 1)
+	h.html += blk
 }
 
 func (h *HTMLTemplate) Finalize() {
