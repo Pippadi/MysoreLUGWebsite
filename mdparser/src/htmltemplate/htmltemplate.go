@@ -51,6 +51,9 @@ func (h *HTMLTemplate) ReadTemplates(path string) {
 	content, err = ioutil.ReadFile(filepath.Join(path, "heading1"))
 	h.heading1 = string(content)
 	checkError(err)
+	content, err = ioutil.ReadFile(filepath.Join(path, "heading2"))
+	h.heading2 = string(content)
+	checkError(err)
 }
 
 func (h *HTMLTemplate) SetTitle(aTitle string) {
@@ -66,12 +69,16 @@ func (h *HTMLTemplate) AddHeading1(aHeading string) {
 	h.html += strings.Replace(h.heading1, "{}", aHeading, 1)
 }
 
+func (h *HTMLTemplate) AddHeading2(aHeading string) {
+	h.html += strings.Replace(h.heading2, "{}", aHeading, 1)
+}
+
 func (h *HTMLTemplate) AddParagraph(aParagraph string) {
 	h.html += strings.Replace(h.para, "{}", aParagraph, 1)
 }
 
 func (h *HTMLTemplate) AddCodeBlk(aCodeBlk string) {
-	h.AddParagraph(strings.Replace(h.codeBlk, "{}", aCodeBlk, 1))
+	h.html += strings.Replace(h.codeBlk, "{}", aCodeBlk, 1)
 }
 
 func (h *HTMLTemplate) AddHorizontalLine() {

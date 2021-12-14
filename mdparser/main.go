@@ -42,12 +42,8 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	inParagraph := false
-	currentParagraph := ""
-	currentCodeBlk := ""
-	inCode := false
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := strings.Trim(scanner.Text(), " \t")
 
 		for i, chr := range SpecialCharacters {
 			line = strings.ReplaceAll(line, "\\"+string(chr), SpecialCharacterNames[i])
@@ -65,29 +61,35 @@ func main() {
 		m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
 		line = m.ReplaceAllString(line, `<b>$1</b>`)
 
-		if !inCode && line == "" {
-			if inParagraph && currentParagraph != "" {
-				template.AddParagraph(currentParagraph)
-				currentParagraph = "" 
-			}
-			inParagraph = !inParagraph
-		} else if line[:3] == "```" {
-			if inCode {
-				template.AddCodeBlk(currentCodeBlk[:len(currentCodeBlk) - 1])
-				currentCodeBlk = ""
-			}
-			inCode = !inCode
-		} else if line[:3] == "---" {
-			template.AddHorizontalLine()
-		} else if line[:2] == "# " {
-			template.SetTitle(line[2:])
-		} else if line[:3] == "## " {
-			template.SetTitle(line[3:])
-		} else {
-			if inCode {
-				currentCodeBlk += line + "\n"
+		if line != "" {
+			if line[:3] == "```" {
+				blk := ""
+				ended := false
+				for !ended && scanner.Scan() {
+					l := scanner.Text()
+					ended = l == "```"
+					blk += l + "\n"
+				}
+				template.AddCodeBlk(blk[:len(blk) - 5])
+			} else if line[:3] == "---" {
+				template.AddHorizontalLine()
+			} else if line[:2] == "# " {
+				template.SetTitle(line[2:])
+			} else if line[:3] == "## " {
+				template.AddSubtitle(line[3:])
+			} else if line[:4] == "### " {
+				template.AddHeading1(line[4:])
+			} else if line[:5] == "#### " {
+				template.AddHeading2(line[5:])
 			} else {
-				currentParagraph += line + "\n"
+				para := line
+				ended := false
+				for !ended && scanner.Scan() {
+					l := strings.Trim(scanner.Text(), " \t")
+					ended = l == ""
+					para += l + "\n"
+				}
+				template.AddParagraph(para[:len(para) - 1])
 			}
 		}
 	}
