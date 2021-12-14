@@ -49,7 +49,7 @@ func main() {
 			line = strings.ReplaceAll(line, "\\"+string(chr), SpecialCharacterNames[i])
 		}
 
-		m := regexp.MustCompile(`\((.+?)\)\[(.+?)\]`) // Links as (text)[URL]
+		m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
 		line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
 
 		m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``

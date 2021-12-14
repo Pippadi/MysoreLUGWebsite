@@ -18,4 +18,4 @@ This is code.
 !width="70%" height="auto" alt="Raspberry Pi"
 !A Raspberry Pi
 
-This is a (link)[https://mysorelug.indriyallc.net].
+This is a [link](https://mysorelug.indriyallc.net).
