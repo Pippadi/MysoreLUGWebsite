@@ -30,13 +30,21 @@ func replaceCharAt(str, toInsert string, index int) string {
 }
 
 func main() {
+	if len(os.Args) == 1 {
+		fmt.Println("Usage: ./mdparser markdown.md [templates folder]")
+		os.Exit(1)
+	}
 	var html = ""
-	var template = htmltemplate.NewHTMLTemplate("templates")
+	var templatePath = "templates"
+	if len(os.Args) > 2 {
+		templatePath = os.Args[2]
+	}
+	var template = htmltemplate.NewHTMLTemplate(templatePath)
 
 	const SpecialCharacters = "_`()[]*"
 	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
 
-	file, err := os.Open("template-article.md")
+	file, err := os.Open(os.Args[1])
 	checkError(err)
 	defer file.Close()
 
@@ -116,6 +124,6 @@ func main() {
 			html = strings.ReplaceAll(html, SpecialCharacterNames[i], string(chr))
 	}
 
-	fmt.Println(html)
+	fmt.Print(html)
 	checkError(scanner.Err())
 }
