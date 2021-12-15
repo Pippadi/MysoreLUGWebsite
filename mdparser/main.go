@@ -15,18 +15,18 @@ func checkError(err error) {
 	}
 }
 
-const footer = `</main>
-
-<footer>
-<hr>
-<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
-<a href="/">Read More</a>
-</footer>
-</body>
-</html>`
-
-func replaceCharAt(str, toInsert string, index int) string {
-	return str[:index] + toInsert + str[index+1:]
+func convertSpecialCharacters(fromSpecial bool, str string) string {
+	const SpecialCharacters = "_`()[]*"
+	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
+	if fromSpecial {
+		for i, chr := range SpecialCharacters {
+			str = strings.ReplaceAll(str, "\\"+string(chr), SpecialCharacterNames[i])
+		}
+	} else {
+	for i, chr := range SpecialCharacters {
+			str = strings.ReplaceAll(str, SpecialCharacterNames[i], string(chr))
+	}
+	return str
 }
 
 func main() {
@@ -41,9 +41,6 @@ func main() {
 	}
 	var template = htmltemplate.NewHTMLTemplate(templatePath)
 
-	const SpecialCharacters = "_`()[]*"
-	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
-
 	file, err := os.Open(os.Args[1])
 	checkError(err)
 	defer file.Close()
@@ -51,11 +48,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		line := strings.Trim(scanner.Text(), " \t")
-
-		for i, chr := range SpecialCharacters {
-			line = strings.ReplaceAll(line, "\\"+string(chr), SpecialCharacterNames[i])
-		}
+		line := convertSpecialCharacters(true, strings.Trim(scanner.Text(), " \t"))
 
 		m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
 		line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
@@ -106,7 +99,7 @@ func main() {
 				template.AddImage(path, opts, captions)
 			} else {
 				scanner.Scan()
-				para := line
+				para := line + "\n"
 				l := strings.Trim(scanner.Text(), " \t")
 				for l != "" && scanner.Scan() {
 					para += l + "\n"
@@ -119,10 +112,7 @@ func main() {
 
 	template.Finalize()
 	html += template.String()
-
-	for i, chr := range SpecialCharacters {
-			html = strings.ReplaceAll(html, SpecialCharacterNames[i], string(chr))
-	}
+	html = convertSpecialCharacters(false, html)
 
 	fmt.Print(html)
 	checkError(scanner.Err())
