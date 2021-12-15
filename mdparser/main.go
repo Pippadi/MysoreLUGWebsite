@@ -23,10 +23,29 @@ func convertSpecialCharacters(fromSpecial bool, str string) string {
 			str = strings.ReplaceAll(str, "\\"+string(chr), SpecialCharacterNames[i])
 		}
 	} else {
-	for i, chr := range SpecialCharacters {
+		for i, chr := range SpecialCharacters {
 			str = strings.ReplaceAll(str, SpecialCharacterNames[i], string(chr))
+		}
 	}
 	return str
+}
+
+func processTextLine(line string) string {
+	line = convertSpecialCharacters(true, strings.Trim(line, " \t"))
+
+	m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
+	line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
+
+	m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
+	line = m.ReplaceAllString(line, `<code>$1</code>`)
+
+	m = regexp.MustCompile(`_(.+?)_`) // Italics in _..._
+	line = m.ReplaceAllString(line, `<em>$1</em>`)
+
+	m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
+	line = m.ReplaceAllString(line, `<b>$1</b>`)
+
+	return line
 }
 
 func main() {
@@ -48,19 +67,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		line := convertSpecialCharacters(true, strings.Trim(scanner.Text(), " \t"))
-
-		m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
-		line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
-
-		m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
-		line = m.ReplaceAllString(line, `<code>$1</code>`)
-
-		m = regexp.MustCompile(`_(.+?)_`) // Italics in _..._
-		line = m.ReplaceAllString(line, `<em>$1</em>`)
-
-		m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
-		line = m.ReplaceAllString(line, `<b>$1</b>`)
+		line := processTextLine(scanner.Text())
 
 		if line != "" {
 			if line[:3] == "```" {
@@ -94,16 +101,16 @@ func main() {
 					} else {
 						captions = append(captions, l)
 					}
-					l = strings.Trim(scanner.Text(), " \t")
+					l = processTextLine(scanner.Text())
 				}
 				template.AddImage(path, opts, captions)
 			} else {
 				scanner.Scan()
 				para := line + "\n"
-				l := strings.Trim(scanner.Text(), " \t")
+				l := processTextLine(scanner.Text())
 				for l != "" && scanner.Scan() {
 					para += l + "\n"
-					l = strings.Trim(scanner.Text(), " \t")
+					l = processTextLine(scanner.Text())
 				}
 				template.AddParagraph(para)
 			}
