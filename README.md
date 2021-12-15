@@ -15,7 +15,6 @@ The same goes for edits of others' articles, and changes to the format itself.
 ### Actually writing an article
 These webpages are stored as static HTML. You could write your webpage in raw HTML, but that can get cumbersome very quickly.
 For most articles that have no complex formatting requirements, writing in our markdown-like format can be the most convenient.
-The `mdparse` program can be used to convert the markdown to HTML.
 
 Formatting example:
 ```
@@ -43,11 +42,12 @@ A Raspberry Pi
 This is a [link](https://mysorelug.indriyallc.net).
 ```
 
-To run the `mdparse` script from the root folder of the repository:
+To run the `mdparse` script from the root folder of the repository to generate HTML:
 ```
-mdparse/mdparse markdown.md mdparse/templates
+mdparse/mdparse articles/2021/12/example-article/example-article.md mdparse/templates > articles/2021/12/example-article/index.html
 ```
-`markdown.md` is your article in markdown. `mdparse/templates` is the location of the HTML template files.
-The script writes the HTML to `STDOUT`, so there is no need to create a new file to preview. Once final, the output can simply be redirected to a file.
+`mdparse/templates` is the location of the HTML template files.
+The script writes the HTML to `STDOUT`, so there is no need to create a new file to preview. Once final, the output can simply be redirected to a file as shown.
 
-The default templates in the `mdparse/templates` contain relative paths for items like the main stylesheet (`shared/css/main.css`). This means that you may want to change these paths depending on the location of your article. By default, the relative paths are based on the assumption that the final HTML will reside in the `articles/<year>/<month>/<article-name>` directory (which is where articles ought to be).
+The default templates in the `mdparse/templates` contain relative paths for items like the main stylesheet (`shared/css/main.css`). This means that you may want to change these paths depending on the location of your article.
+By default, the relative paths are based on the assumption that the final HTML will reside in the `articles/<year>/<month>/<article-name>` directory (which is where articles ought to be).
