@@ -31,9 +31,9 @@ This is a paragraph.
 _This_ *is* `another` _paragraph_.
 Here are some random characters- \` \_
 
-\`\`\`
+\```
 This is a code block.
-\`\`\`
+\```
 
 !../articles/template-article/assets/rpi.png
 !width="70%" height="auto" alt="Raspberry Pi"
@@ -48,6 +48,7 @@ mdparse/mdparse articles/2021/12/example-article/example-article.md mdparse/temp
 ```
 `mdparse/templates` is the location of the HTML template files.
 The script writes the HTML to `STDOUT`, so there is no need to create a new file to preview. Once final, the output can simply be redirected to a file as shown.
+The example's HTML output can be seen [here](https://mysorelug.indriyallc.net/articles/2021/12/template-article/Index.html).
 
 The default templates in the `mdparse/templates` contain relative paths for items like the main stylesheet (`shared/css/main.css`). This means that you may want to change these paths depending on the location of your article.
 By default, the relative paths are based on the assumption that the final HTML will reside in the `articles/<year>/<month>/<article-name>` directory (which is where articles ought to be).
