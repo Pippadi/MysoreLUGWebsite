@@ -15,18 +15,37 @@ func checkError(err error) {
 	}
 }
 
-const footer = `</main>
+func convertSpecialCharacters(fromSpecial bool, str string) string {
+	const SpecialCharacters = "_`()[]*"
+	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
+	if fromSpecial {
+		for i, chr := range SpecialCharacters {
+			str = strings.ReplaceAll(str, "\\"+string(chr), SpecialCharacterNames[i])
+		}
+	} else {
+		for i, chr := range SpecialCharacters {
+			str = strings.ReplaceAll(str, SpecialCharacterNames[i], string(chr))
+		}
+	}
+	return str
+}
 
-<footer>
-<hr>
-<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
-<a href="/">Read More</a>
-</footer>
-</body>
-</html>`
+func processTextLine(line string) string {
+	line = convertSpecialCharacters(true, strings.Trim(line, " \t"))
 
-func replaceCharAt(str, toInsert string, index int) string {
-	return str[:index] + toInsert + str[index+1:]
+	m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
+	line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
+
+	m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
+	line = m.ReplaceAllString(line, `<code>$1</code>`)
+
+	m = regexp.MustCompile(`_(.+?)_`) // Italics in _..._
+	line = m.ReplaceAllString(line, `<em>$1</em>`)
+
+	m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
+	line = m.ReplaceAllString(line, `<b>$1</b>`)
+
+	return line
 }
 
 func main() {
@@ -41,9 +60,6 @@ func main() {
 	}
 	var template = htmltemplate.NewHTMLTemplate(templatePath)
 
-	const SpecialCharacters = "_`()[]*"
-	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
-
 	file, err := os.Open(os.Args[1])
 	checkError(err)
 	defer file.Close()
@@ -51,23 +67,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		line := strings.Trim(scanner.Text(), " \t")
-
-		for i, chr := range SpecialCharacters {
-			line = strings.ReplaceAll(line, "\\"+string(chr), SpecialCharacterNames[i])
-		}
-
-		m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
-		line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
-
-		m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
-		line = m.ReplaceAllString(line, `<code>$1</code>`)
-
-		m = regexp.MustCompile(`_(.+?)_`) // Italics in _..._
-		line = m.ReplaceAllString(line, `<em>$1</em>`)
-
-		m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
-		line = m.ReplaceAllString(line, `<b>$1</b>`)
+		line := processTextLine(scanner.Text())
 
 		if line != "" {
 			if line[:3] == "```" {
@@ -101,16 +101,16 @@ func main() {
 					} else {
 						captions = append(captions, l)
 					}
-					l = strings.Trim(scanner.Text(), " \t")
+					l = processTextLine(scanner.Text())
 				}
 				template.AddImage(path, opts, captions)
 			} else {
 				scanner.Scan()
-				para := line
-				l := strings.Trim(scanner.Text(), " \t")
+				para := line + "\n"
+				l := processTextLine(scanner.Text())
 				for l != "" && scanner.Scan() {
 					para += l + "\n"
-					l = strings.Trim(scanner.Text(), " \t")
+					l = processTextLine(scanner.Text())
 				}
 				template.AddParagraph(para)
 			}
@@ -119,10 +119,7 @@ func main() {
 
 	template.Finalize()
 	html += template.String()
-
-	for i, chr := range SpecialCharacters {
-			html = strings.ReplaceAll(html, SpecialCharacterNames[i], string(chr))
-	}
+	html = convertSpecialCharacters(false, html)
 
 	fmt.Print(html)
 	checkError(scanner.Err())
