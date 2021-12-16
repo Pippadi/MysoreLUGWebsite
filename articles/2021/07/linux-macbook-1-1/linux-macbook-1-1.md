@@ -57,11 +57,21 @@ Booting and installing from the thumb drive worked fine. If you need it and live
 Most things worked out of the box for me on Zorin OS Lite 15.3 (Ubuntu 18.04 LTS), including display and keyboard brightness controls, keyboard and trackpad, WiFi, bluetooth, speakers, and microphone.
 I can't say much about the battery, because mine has been long-dead.
 The first thing that didn't work on Linux was the iSight webcam. I followed [this tutorial](https://unlockforus.com/linux-mint-17-2-rafaela-on-macbook-41-late-2007-isight-webcam/), which worked great for me.
-The only thing that doesn't work right now is suspend. If I get it working, I'll edit this article.
+
+The last thing to not work was suspend. When I tried suspending, I would see the system trying to suspend, but it would wake up immediately as if suspend failed.
+This was indeed the case. Looking at `dmesg`, I found some errors saying that it wasn't able to report suspend state to the TPM module of all things.
+Apparently, these 2006 Intel macs were the last macs to have TPMs. That sentence there was pretty much everything I could find about them online.
+Either way, I had no need for TPM, so I tried blacklisting the driver. Finding that suspend did indeed work after doing so, I made the changes permanent by creating the file `/etc/modprobe.d/tpm-blacklist.conf`, with contents:
+
+```
+blacklist tpm
+blacklist tpm_infineon
+```
 
 My problems didn't end there, unfortunately. On my third day of trying to get Linux to work, I tried starting the mac as usual. I heard the optical drive start and hard disk spin up.
 Immediately after, I heard a click from the hard disk, and saw the activity/sleep light turn off. I eventually got it to boot by pressing-and-holding the power button till I saw the light flicker and heard the unit beep.
-This happens the first time I try to start the computer in a day. I have no idea why this is happening, but as long as it continues to work, I'm happy. SMC and NVRAM resets, even hard disk swaps, don't seem to help.
+This happened for a few days, and disappeared as mysteriously as it came. According to this [Macrumors thread](https://forums.macrumors.com/threads/macbook-only-turns-on-when-power-button-is-held-down.1285597/), it's due to liquid damage on the top case.
+Whatever it is, it's gone now, and it still works.
 
 Anyway, as I was saying, Zorin OS only boots with BIOS. This is because the mac has a 32-bit EFI, and Ubuntu ISOs apparently don't come with 32-bit EFI support.
 So, the installer could only install a BIOS-bootable system.
