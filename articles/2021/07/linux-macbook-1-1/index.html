@@ -15,15 +15,20 @@
 
 <main>
 <h1 class="article-title">Dual-Booting Linux with OSX on a Core Duo MacBook 1,1</h1>
+
 <p class="article-subtitle">By Prithvi Vishak</p>
+
 <p class="article-subtitle">Created July 13th, 2021</p>
+
 <p class="article-subtitle">Updated July 22nd, 2021</p>
+
 <hr>
 
 <p class="article-paragraph">
 Recently, my parents made a trip to my grandparents' house, and they brought back my grandpa's old MacBook. It is a MacBook Pro 1,1 complete with an Intel Core Duo processor, 2GB of RAM, and an 80GB hard disk.
 OSX Snow Leopard ran a little slow, and was obviously completely useless. It was time for the Linux treatment. Installing Linux on a modern-ish mac is fairly straightforward, so I thought this would be the same way.
 </p>
+
 <p class="article-paragraph">
 <b><em>Boy, was I wrong.</em></b>
 </p>
@@ -33,35 +38,33 @@ Modern PCs use the Universal Extensible Firmware Interface (UEFI), the modern su
 Relatively modern 64-bit Intel macs (without the T2 security chip) with their custom EFI boot Linux, even the live disks, just fine with pretty much no tweaking needed.
 As it turns out, Apple's firmware on the MacBook Pro 1,1 is significantly different. It just won't boot Linux from a thumb drive.
 </p>
+
 <p class="article-paragraph">
 This article from <a href="https://astrofloyd.wordpress.com/2014/01/14/linux-only-installation-on-2006-macbook-using-refind/">AstroFloyd</a> worked great for a lot of people, but unfortunately not for me.
 I couldn't get Linux to install without OSX, but I wanted to keep OSX around anyway, in case I'd ever need it. And dual-booting is always cooler than single-booting.
 Anyway, this is a chronicle of my findings.
 </p>
 
-
 <p class="article-paragraph">
 First off, I installed the <a href="https://www.rodsbooks.com/refind/">rEFInd boot manager</a> by running the following (OSX doesn't seem to have <code>wget</code>).
-<div class="article-code">
-<code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip &gt; refind.zip
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>prithvi $ curl -S webwerks.dl.sourceforge.net/project/refind/0.13.2/refind-bin-0.13.2.zip &gt; refind.zip
 ...
 prithvi $ unzip refind.zip
 ...
 prithvi $ cd refind-bin-0.13.2
-prithvi $ sudo ./refind-install
-</code>
-</div>
-</p>
+prithvi $ sudo ./refind-install</code></div></p>
 
 <p class="article-paragraph">
 When I rebooted, I was greeted by rEFInd. In Disk Utility, I shrank OSX's partition.
 </p>
 
 <div class="article-image-div">
-	<img src="assets/diskutil.png" width="60%" height="auto" alt="OSX Disk Utility">
-	<p class="article-image-caption">OSX is greedy.</p>
-</div>
+<img src=assets/diskutil.png width="60%" height="auto" alt="OSX Disk Utility" >
+<p class="article-image-caption">OSX is greedy.</p>
 
+</div>
 <p class="article-paragraph">
 After this, I flashed Zorin OS, my 32-bit distro of choice, to a thumb drive, and booted to the live environment.
 I chose to create my partitions in GParted, because I like its interface.
@@ -69,14 +72,15 @@ I created only an EFI partition and root partition for Linux as shown, of course
 </p>
 
 <div class="article-image-div">
-	<img src="assets/gparted.png" width="80%" height="auto" alt="Disk partitioning">
-	<p class="article-image-caption">Do you notice something different?</p>
-</div>
+<img src=assets/gparted.png width="80%" height="auto" alt="Disk partitioning" >
+<p class="article-image-caption">Do you notice something different?</p>
 
+</div>
 <p class="article-paragraph">
 Next, I went through the installer's advanced partitioning, and set it to use the EFI and root partition we created, and nothing more.
 I made sure it wasn't using OSX's EFI partition (which it was by default), and only its own.
 </p>
+
 <p class="article-paragraph">
 Oddly enough, it did not use that EFI partition for anything. It seemed to boot in BIOS mode with the mac's Compatibility Support Module (CSM), which emulates BIOS.
 Apparently, this is used for installing Windows with Bootcamp, which explains why I saw an entry called "Windows" in the boot menu (not rEFInd), which boots Zorin.
@@ -93,13 +97,23 @@ Booting and installing from the thumb drive worked fine. If you need it and live
 Most things worked out of the box for me on Zorin OS Lite 15.3 (Ubuntu 18.04 LTS), including display and keyboard brightness controls, keyboard and trackpad, WiFi, bluetooth, speakers, and microphone.
 I can't say much about the battery, because mine has been long-dead.
 The first thing that didn't work on Linux was the iSight webcam. I followed <a href="https://unlockforus.com/linux-mint-17-2-rafaela-on-macbook-41-late-2007-isight-webcam/">this tutorial</a>, which worked great for me.
-The only thing that doesn't work right now is suspend. If I get it working, I'll edit this article.
 </p>
+
+<p class="article-paragraph">
+The last thing to not work was suspend. When I tried suspending, I would see the system trying to suspend, but it would wake up immediately as if suspend failed.
+This was indeed the case. Looking at <code>dmesg</code>, I found some errors saying that it wasn't able to report suspend state to the TPM module of all things.
+Apparently, these 2006 Intel macs were the last macs to have TPMs. That sentence there was pretty much everything I could find about them online.
+Either way, I had no need for TPM, so I tried blacklisting the driver. Finding that suspend did indeed work after doing so, I made the changes permanent by creating the file <code>/etc/modprobe.d/tpm-blacklist.conf</code>, with contents:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>blacklist tpm
+blacklist tpm_infineon</code></div></p>
 
 <p class="article-paragraph">
 My problems didn't end there, unfortunately. On my third day of trying to get Linux to work, I tried starting the mac as usual. I heard the optical drive start and hard disk spin up.
 Immediately after, I heard a click from the hard disk, and saw the activity/sleep light turn off. I eventually got it to boot by pressing-and-holding the power button till I saw the light flicker and heard the unit beep.
-This happens the first time I try to start the computer in a day. I have no idea why this is happening, but as long as it continues to work, I'm happy. SMC and NVRAM resets, even hard disk swaps, don't seem to help.
+This happened for a few days, and disappeared as mysteriously as it came. According to this <a href="https://forums.macrumors.com/threads/macbook-only-turns-on-when-power-button-is-held-down.1285597/">Macrumors thread</a>, it's due to liquid damage on the top case.
+Whatever it is, it's gone now, and it still works.
 </p>
 
 <p class="article-paragraph">
@@ -109,6 +123,7 @@ After looking online, I found that one could create an EFI-bootable Ubuntu ISO b
 Unfortunately, none of the ISOs I created worked (fine, I only tried it once, but it took a long time and I didn't want to do it again). So instead, I decided to install Debian directly.
 I mean, what's cooler than 2 OSs? 3 OSs, obviously.
 </p>
+
 <p class="article-paragraph">
 I first went for a Debian stable (10) live ISO with LXQt and non-free drivers. I got GRUB from EFI. The live environment didn't seem to work (more on this later), but the installer did.
 It seemed to install okay, but when I tried booting to it, all I got was a black screen. Attributing it to an ancient kernel (4.19, why on earth do people use Debian stable?), I downloaded a Debian testing (11, kernel 5.10) weekly build ISO, which also seemed to install correctly.
@@ -122,21 +137,25 @@ Installing the nonfree firmware didn't help, but the boot option got me to a ter
 The reason I wasn't booting to a GUI seemed to be an issue with the display manager, <code>SDDM</code>, not starting.
 I wasn't in the mood to debug it, so I downloaded a Debian stable netinstaller, and installed that.
 </p>
+
 <p class="article-paragraph">
 Repeating the same steps to disable modesetting, I still got only a terminal. When I tried <code>startx</code>, it wouldn't start, saying that it needed modesetting.
 </p>
+
 <p class="article-paragraph">
 <b><em>Forget it.</em></b>
 </p>
 
 <div class="article-image-div">
-	<img src="assets/refind-rabbit-hole.jpg" width="75%" height="auto" alt="rEFInd Menu">
-	<p class="article-image-caption">Rabbit hole? What rabbit hole?</p>
-</div>
+<img src=assets/refind-rabbit-hole.jpg width="75%" height="auto" alt="rEFInd Menu" >
+<p class="article-image-caption">Rabbit hole? What rabbit hole?</p>
 
+</div>
 <p class="article-paragraph">
-I knew graphics worked on Zorin OS, so it occured to me that I could <em>add</em> EFI boot support from Debian by installing GRUB from there. I had an empty EFI partition and everything. Following the instructions <a href="https://wiki.debian.org/GrubEFIReinstall">here</a> didn't result in any errors.
+I knew graphics worked on Zorin OS, so it occured to me that I could <em>add</em> EFI boot support from Debian by installing GRUB from there. I had an empty EFI partition and everything.
+Following the instructions <a href="https://wiki.debian.org/GrubEFIReinstall">here</a> didn't result in any errors.
 </p>
+
 <p class="article-paragraph">
 Selecting Ubuntu with <code>grubia32.efi</code> from rEFInd got me GRUB. When I tried booting as usual, I got the same blank screen. The keyboard backlight came on, suggesting that the OS seemed to have started X, but wasn't displaying properly.
 So, I added the <code>radeon.modeset=0</code> to Zorin OS's boot options in GRUB, and I <em>finally</em> got a GUI!
@@ -146,6 +165,7 @@ So, I added the <code>radeon.modeset=0</code> to Zorin OS's boot options in GRUB
 Unfortunately, this came with issues of its own. Graphics performance was <em>abysmal</em>. I suppose that everything is somehow CPU-rendered, or the graphics card is not clocked as fast as it could be. Also, I can't change the display brightness anymore.
 This is the stage the computer is at now. I suppose I will go back to booting Zorin with BIOS until the graphics card quirks are ironed out.
 </p>
+
 <p class="article-paragraph">
 I continue to experiment and troubleshoot with this machine (I say "this" machine because I've used it to write most of this article). My long-term goal is to get it to boot Linux from a thumb drive directly, without rEFInd or the tool used by AstroFloyd.
 That's all for now. I hope this article was vaguely useful, even though there's a dearth of better-researched, less rambling articles out there.
@@ -153,7 +173,6 @@ That's all for now. I hope this article was vaguely useful, even though there's 
 
 <p class="article-paragraph">
 I'd like to give a shoutout to <a href="https://www.rodsbooks.com">Roderick Smith</a>, whose work is very detailed and informative. Not to mention that he created rEFInd, if you didn't notice.
-His articles helped me understand a lot about the boot process and mac-related quirks.
 </p>
 
 </main>
