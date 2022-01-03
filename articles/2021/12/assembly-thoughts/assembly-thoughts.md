@@ -3,8 +3,6 @@
 ## Created December 26th, 2021
 ---
 
-### This is a heading
-
 I've been into computers and coding for a couple years now. I can manage some Python, Go, and C++ (Arduino), configure our home network, and maintain this website.
 One thing that I had been meaning to explore was some of the more low-level stuff.
 I chose to learn assembly because I heard it was _the_ way to get the most out of your hardware, it teaches you a lot about the workings of your computer, and... all the cool kids are doing it.
