@@ -1,0 +1,141 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<meta name="description" content="A website for Linux users and geeks in general to express their thoughts and spread information">
+	<title>Building My First Docker Container</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">Building My First Docker Container</h1>
+
+<p class="article-subtitle">By Prithvi Vishak</p>
+
+<p class="article-subtitle">Created January 12th, 2022</p>
+
+<hr>
+
+<p class="article-paragraph">
+Docker containers are a pretty cool way to deploy programs.
+I've used other peoples' docker contairs quite a bit, but now wanted to make my own. Here's how that went.
+</p>
+
+<p class="article-paragraph">
+I tried packaging an IRC bot I had written in go, the <a href="https://bitbucket.org/pvpublic/uptodatebot/src/master/">UpToDateBot</a>.
+What it does isn't super relevant. Its needs are very simple, making it a good choice for my first container.
+It needs one config file, <code>config.yaml</code> in <code>/etc/uptodatebot</code>. It doesn't need any ports exposed to it.
+</p>
+
+<p class="article-paragraph">
+To get a complete docker container from my go source code, I would need to first build the code, then copy it over to a container. The config file stuff can all be handled when running the container, since the config file resides on my host's filesystem anyway.
+</p>
+
+<p class="article-paragraph">
+At first, I thought I would start easy by building the executable on my host machine, and copying the binary to the root of the container in my Dockerfile. I had heard of Alpine Linux being one of the lightest options for container OSs, so I went with that.
+Here's what I started with in my Dockerfile:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>FROM alpine:latest
+
+COPY ./UpToDateBot /
+
+RUN mkdir /etc/uptodatebot
+
+WORKDIR /etc/uptodatebot
+CMD [ "/UpToDateBot" ]</code></div></p>
+
+<p class="article-paragraph">
+I set the <code>WORKDIR</code> to <code>/etc/uptodatebot</code> because that's where I intended to put the config file, and the executable searches for it only in the directory in which it is run.
+</p>
+
+<p class="article-paragraph">
+Building and running:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>docker build -t uptodatebot .
+docker run -v $PWD/config.yaml:/etc/uptodatebot/config.yaml uptodatebot</code></div></p>
+
+<p class="article-paragraph">
+Now of course, this didn't work at all. Alpine just complained that it couldn't find the executable.
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>exec /UpToDateBot: no such file or directory</code></div></p>
+
+<p class="article-paragraph">
+When running with the interactive shell flag (<code>docker run -v ... -it uptodatebot sh</code>), I found out that the executable had indeed been copied correctly.
+I then remembered the memes about Alpine not being GNU/Linux. <em>Of course!</em>
+</p>
+
+<p class="article-paragraph">
+I had build my executable on my openSUSE Tumbleweed machine, which uses <code>glibc</code>. Alpine doesn't use GNU software, so it has <code>musl</code>. It can't run executables that link to <code>glibc</code> like mine does.
+I'm guessing that the vague error was due to the lightweight nature of Alpine
+</p>
+
+<p class="article-paragraph">
+I then tried the next best thing, by building the container <code>FROM debian:latest</code> instead. That too failed, this time because openSUSE's <code>glibc</code> version is newer than, and incompatible with, the version shipped with Debian.
+Building the container <code>FROM opensuse/tumbleweed:latest</code>, it worked!
+</p>
+
+<p class="article-paragraph">
+But this was just the first step. I wanted a full build setup that built the executable binary in one container and copied the executables to a final one, so that things would largely be architecture-agnostic, and not dependent on the host machine's OS.
+I stubled upon the <code>golang</code> container, which contained a full environment for building, with tools like git preinstalled.
+All I had to do was create a directory for my build, clone the git repo, build the executable, and copy it over to a fresh container. This was done pretty easily, after some research.
+I took the opportunity to add a personal touch to the product too.
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>FROM golang:latest as buildcontainer
+
+WORKDIR /build
+RUN git clone https://PrithviVishak@bitbucket.org/pvpublic/uptodatebot.git
+WORKDIR /build/uptodatebot
+RUN go build -o UpToDateBot
+
+FROM debian:latest
+LABEL maintainer="Prithvi Vishak <prithvivishak@gmail.com>"
+
+COPY --from=buildcontainer /build/uptodatebot/UpToDateBot /
+
+WORKDIR /etc/uptodatebot
+CMD [ "/UpToDateBot" ]</code></div></p>
+
+<p class="article-paragraph">
+As it turns out, the golang container's <code>glibc</code> version is compatible with Debian's. This was near ideal. The last thing I wanted was it to run in Alpine.
+After yet more research, I found that Alpine has a package called <code>gcompat</code>, which allows <code>glibc</code> programs to run properly. And indeed it did. Here's the final result:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>FROM golang:latest as buildcontainer
+
+WORKDIR /build
+RUN git clone https://PrithviVishak@bitbucket.org/pvpublic/uptodatebot.git
+WORKDIR /build/uptodatebot
+RUN go build -o UpToDateBot
+
+FROM alpine:latest as uptodatebot
+LABEL maintainer="Prithvi Vishak &lt;prithvi@example.com&gt;"
+
+COPY --from=buildcontainer /build/uptodatebot/UpToDateBot /
+RUN apk add --no-cache gcompat
+
+WORKDIR /etc/uptodatebot
+CMD [ "/UpToDateBot" ]</code></div></p>
+
+<p class="article-paragraph">
+As usual, this article is mostly for my reference. If you landed here after your hundredth frenzied search of the internet for ways to solve an issue you're having, I hope this helped.
+</p>
+
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub</a><br>
+<a href="/">Read More</a>
+</footer>
+</body>
+</html>
