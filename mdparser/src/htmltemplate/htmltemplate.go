@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"io/ioutil"
 	"strings"
+	"regexp"
 	"fmt"
 )
 
@@ -18,6 +19,7 @@ type HTMLTemplate struct {
 	heading2 string
 	image string
 	imageCaption string
+	link string
 
 	html string
 	title string
@@ -53,7 +55,27 @@ func (h *HTMLTemplate) ReadTemplates(path string) {
 	h.image = string(content)
 	content, err = ioutil.ReadFile(filepath.Join(path, "imageCaption"))
 	h.imageCaption = string(content)
+	content, err = ioutil.ReadFile(filepath.Join(path, "link"))
+	h.link = string(content)
 	checkError(err)
+}
+
+func (h *HTMLTemplate) processInlineGoodies(text string) string {
+	m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
+	t := strings.ReplaceAll(h.link, "{url}", "${2}") // t is the template for the regex replace
+	t = strings.ReplaceAll(t, `{text}`, "${1}") // Regex match 1 is text; match 2 is URL
+	text = m.ReplaceAllString(text, t)
+
+	m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
+	text = m.ReplaceAllString(text, `<code>$1</code>`)
+
+	m = regexp.MustCompile(`_(.+?)_`) // Italics in _..._
+	text = m.ReplaceAllString(text, `<em>$1</em>`)
+
+	m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
+	text = m.ReplaceAllString(text, `<b>$1</b>`)
+
+	return text
 }
 
 func (h *HTMLTemplate) SetTitle(aTitle string) {
@@ -74,7 +96,7 @@ func (h *HTMLTemplate) AddHeading2(aHeading string) {
 }
 
 func (h *HTMLTemplate) AddParagraph(aParagraph string) {
-	h.html += strings.Replace(h.para, "{}", aParagraph, 1)
+	h.html += strings.Replace(h.para, "{}", h.processInlineGoodies(aParagraph), 1)
 }
 
 func (h *HTMLTemplate) AddCodeBlk(aCodeBlk string) {

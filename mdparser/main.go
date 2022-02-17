@@ -5,7 +5,6 @@ import (
 	"bufio"
 	"fmt"
 	"strings"
-	"regexp"
 	"mdparser/src/htmltemplate"
 )
 
@@ -30,24 +29,6 @@ func convertSpecialCharacters(fromSpecial bool, str string) string {
 	return str
 }
 
-func processTextLine(line string) string {
-	line = convertSpecialCharacters(true, strings.Trim(line, " \t"))
-
-	m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
-	line = m.ReplaceAllString(line, `<a href="${2}">${1}</a>`)
-
-	m = regexp.MustCompile("`([^`]+?)`") // Inline code in ``
-	line = m.ReplaceAllString(line, `<code>$1</code>`)
-
-	m = regexp.MustCompile(`_(.+?)_`) // Italics in _..._
-	line = m.ReplaceAllString(line, `<em>$1</em>`)
-
-	m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
-	line = m.ReplaceAllString(line, `<b>$1</b>`)
-
-	return line
-}
-
 func main() {
 	if len(os.Args) == 1 {
 		fmt.Println("Usage: ./mdparser markdown.md [templates folder]")
@@ -67,7 +48,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		line := processTextLine(scanner.Text())
+		line := convertSpecialCharacters(true, scanner.Text())
 
 		if line != "" {
 			if line[:3] == "```" {
@@ -101,16 +82,16 @@ func main() {
 					} else {
 						captions = append(captions, l)
 					}
-					l = processTextLine(scanner.Text())
+					l = convertSpecialCharacters(true, scanner.Text())
 				}
 				template.AddImage(path, opts, captions)
 			} else {
 				scanner.Scan()
 				para := line + "\n"
-				l := processTextLine(scanner.Text())
+				l := convertSpecialCharacters(true, scanner.Text())
 				for l != "" && scanner.Scan() {
 					para += l + "\n"
-					l = processTextLine(scanner.Text())
+					l = convertSpecialCharacters(true, scanner.Text())
 				}
 				template.AddParagraph(para)
 			}
