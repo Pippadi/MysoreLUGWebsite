@@ -60,7 +60,7 @@ func (h *HTMLTemplate) ReadTemplates(path string) {
 	checkError(err)
 }
 
-func (h *HTMLTemplate) processInlineGoodies(text string) string {
+func (h *HTMLTemplate) processInlineElements(text string) string {
 	m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
 	t := strings.ReplaceAll(h.link, "{url}", "${2}") // t is the template for the regex replace
 	t = strings.ReplaceAll(t, `{text}`, "${1}") // Regex match 1 is text; match 2 is URL
@@ -79,24 +79,24 @@ func (h *HTMLTemplate) processInlineGoodies(text string) string {
 }
 
 func (h *HTMLTemplate) SetTitle(aTitle string) {
-	h.html = strings.Replace(h.html, h.title, aTitle, 2)
+	h.html = strings.Replace(h.html, h.title,h.processInlineElements(aTitle), 2)
 	h.title = aTitle
 }
 
 func (h *HTMLTemplate) AddSubtitle(aSubtitle string) {
-	h.html += strings.Replace(h.subtitle, "{}", aSubtitle, 1)
+	h.html += strings.Replace(h.subtitle, "{}",h.processInlineElements(aSubtitle), 1)
 }
 
 func (h *HTMLTemplate) AddHeading1(aHeading string) {
-	h.html += strings.Replace(h.heading1, "{}", aHeading, 1)
+	h.html += strings.Replace(h.heading1, "{}",h.processInlineElements(aHeading), 1)
 }
 
 func (h *HTMLTemplate) AddHeading2(aHeading string) {
-	h.html += strings.Replace(h.heading2, "{}", aHeading, 1)
+	h.html += strings.Replace(h.heading2, "{}",h.processInlineElements(aHeading), 1)
 }
 
 func (h *HTMLTemplate) AddParagraph(aParagraph string) {
-	h.html += strings.Replace(h.para, "{}", h.processInlineGoodies(aParagraph), 1)
+	h.html += strings.Replace(h.para, "{}", h.processInlineElements(aParagraph), 1)
 }
 
 func (h *HTMLTemplate) AddCodeBlk(aCodeBlk string) {
