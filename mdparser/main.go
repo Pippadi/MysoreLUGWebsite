@@ -4,7 +4,6 @@ import (
 	"os"
 	"bufio"
 	"fmt"
-	"strings"
 	"mdparser/src/htmltemplate"
 )
 
@@ -14,27 +13,11 @@ func checkError(err error) {
 	}
 }
 
-func convertSpecialCharacters(fromSpecial bool, str string) string {
-	const SpecialCharacters = "_`()[]*"
-	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
-	if fromSpecial {
-		for i, chr := range SpecialCharacters {
-			str = strings.ReplaceAll(str, "\\"+string(chr), SpecialCharacterNames[i])
-		}
-	} else {
-		for i, chr := range SpecialCharacters {
-			str = strings.ReplaceAll(str, SpecialCharacterNames[i], string(chr))
-		}
-	}
-	return str
-}
-
 func main() {
 	if len(os.Args) == 1 {
 		fmt.Println("Usage: ./mdparser markdown.md [templates folder]")
 		os.Exit(1)
 	}
-	var html = ""
 	var templatePath = "templates"
 	if len(os.Args) > 2 {
 		templatePath = os.Args[2]
@@ -48,7 +31,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		line := convertSpecialCharacters(true, scanner.Text())
+		line := scanner.Text()
 
 		if line != "" {
 			if line[:3] == "```" {
@@ -70,11 +53,11 @@ func main() {
 				template.AddHeading1(line[4:])
 			} else if line[:5] == "#### " {
 				template.AddHeading2(line[5:])
-			} else if line[0] == '!' {
+			} else if line[:1] == "!" {
 				path := line[1:]
 				scanner.Scan()
 				opts := ""
-				l := strings.Trim(scanner.Text(), " \t")
+				l := scanner.Text()
 				captions := make([]string, 0)
 				for l != "" && scanner.Scan() {
 					if l[0] == '!' {
@@ -82,16 +65,16 @@ func main() {
 					} else {
 						captions = append(captions, l)
 					}
-					l = convertSpecialCharacters(true, scanner.Text())
+					l = scanner.Text()
 				}
 				template.AddImage(path, opts, captions)
 			} else {
 				scanner.Scan()
 				para := line + "\n"
-				l := convertSpecialCharacters(true, scanner.Text())
+				l := scanner.Text()
 				for l != "" && scanner.Scan() {
 					para += l + "\n"
-					l = convertSpecialCharacters(true, scanner.Text())
+					l = scanner.Text()
 				}
 				template.AddParagraph(para)
 			}
@@ -99,9 +82,7 @@ func main() {
 	}
 
 	template.Finalize()
-	html += template.String()
-	html = convertSpecialCharacters(false, html)
 
-	fmt.Print(html)
+	fmt.Print(template.String())
 	checkError(scanner.Err())
 }

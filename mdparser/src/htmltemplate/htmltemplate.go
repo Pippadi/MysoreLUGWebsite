@@ -60,7 +60,31 @@ func (h *HTMLTemplate) ReadTemplates(path string) {
 	checkError(err)
 }
 
+func replaceHTMLSpecialChars(str string) string {
+	str = strings.ReplaceAll(str, "<", "&lt;")
+	str = strings.ReplaceAll(str, ">", "&gt;")
+	return str
+}
+
+func convertSpecialCharacters(fromSpecial bool, str string) string {
+	const SpecialCharacters = "_`()[]*"
+	var SpecialCharacterNames = [7]string{"underaotuscore", "bac988utick", "openo88uhphesis", "closeoen3parenis", "opeqb38f5racket", "clo9342sqbrac", "ast8898erisk"}
+	if fromSpecial {
+		for i, chr := range SpecialCharacters {
+			str = strings.ReplaceAll(str, "\\"+string(chr), SpecialCharacterNames[i])
+		}
+		str = replaceHTMLSpecialChars(str)
+	} else {
+		for i, chr := range SpecialCharacters {
+			str = strings.ReplaceAll(str, SpecialCharacterNames[i], string(chr))
+		}
+	}
+	return str
+}
+
 func (h *HTMLTemplate) processInlineElements(text string) string {
+	text = convertSpecialCharacters(true, text)
+
 	m := regexp.MustCompile(`\[(.+?)\]\((.+?)\)`) // Links as (text)[URL]
 	t := strings.ReplaceAll(h.link, "{url}", "${2}") // t is the template for the regex replace
 	t = strings.ReplaceAll(t, `{text}`, "${1}") // Regex match 1 is text; match 2 is URL
@@ -75,24 +99,24 @@ func (h *HTMLTemplate) processInlineElements(text string) string {
 	m = regexp.MustCompile(`\*(.+?)\*`) // Bold in *...*
 	text = m.ReplaceAllString(text, `<b>$1</b>`)
 
-	return text
+	return convertSpecialCharacters(false, text)
 }
 
 func (h *HTMLTemplate) SetTitle(aTitle string) {
-	h.html = strings.Replace(h.html, h.title,h.processInlineElements(aTitle), 2)
+	h.html = strings.Replace(h.html, h.title, h.processInlineElements(aTitle), 2)
 	h.title = aTitle
 }
 
 func (h *HTMLTemplate) AddSubtitle(aSubtitle string) {
-	h.html += strings.Replace(h.subtitle, "{}",h.processInlineElements(aSubtitle), 1)
+	h.html += strings.Replace(h.subtitle, "{}", h.processInlineElements(aSubtitle), 1)
 }
 
 func (h *HTMLTemplate) AddHeading1(aHeading string) {
-	h.html += strings.Replace(h.heading1, "{}",h.processInlineElements(aHeading), 1)
+	h.html += strings.Replace(h.heading1, "{}", h.processInlineElements(aHeading), 1)
 }
 
 func (h *HTMLTemplate) AddHeading2(aHeading string) {
-	h.html += strings.Replace(h.heading2, "{}",h.processInlineElements(aHeading), 1)
+	h.html += strings.Replace(h.heading2, "{}", h.processInlineElements(aHeading), 1)
 }
 
 func (h *HTMLTemplate) AddParagraph(aParagraph string) {
@@ -100,7 +124,7 @@ func (h *HTMLTemplate) AddParagraph(aParagraph string) {
 }
 
 func (h *HTMLTemplate) AddCodeBlk(aCodeBlk string) {
-	h.html += strings.Replace(h.codeBlk, "{}", aCodeBlk, 1)
+	h.html += strings.Replace(h.codeBlk, "{}", replaceHTMLSpecialChars(aCodeBlk), 1)
 }
 
 func (h *HTMLTemplate) AddHorizontalLine() {
