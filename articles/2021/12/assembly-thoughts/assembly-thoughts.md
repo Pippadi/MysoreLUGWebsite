@@ -3,8 +3,6 @@
 ## Created December 26th, 2021
 ---
 
-### This is a heading
-
 I've been into computers and coding for a couple years now. I can manage some Python, Go, and C++ (Arduino), configure our home network, and maintain this website.
 One thing that I had been meaning to explore was some of the more low-level stuff.
 I chose to learn assembly because I heard it was _the_ way to get the most out of your hardware, it teaches you a lot about the workings of your computer, and... all the cool kids are doing it.
@@ -102,7 +100,7 @@ sorted = False
 while not sorted:
     sorted = True
     for i in range(len(l)-1):
-        if l[i] &gt; l[i+1]:
+        if l[i] > l[i+1]:
             l[i], l[i+1] = l[i+1], l[i]
             sorted = False
 
@@ -112,8 +110,8 @@ print(l)
 And the C:
 
 ```
-#include &lt;stdio.h&gt;
-#include &lt;stdbool.h&gt;
+#include <stdio.h>
+#include <stdbool.h>
 
 #define size 1000
 
@@ -124,7 +122,7 @@ int main() {
 	while (!sorted) {
 		sorted = true;
 		for (int i=0; i<size-1; i++) {
-			if (arr[i] >gt; arr[i+1]) {
+			if (arr[i] > arr[i+1]) {
 				int temp = arr[i+1];
 				arr[i+1] = arr[i];
 				arr[i] = temp;
@@ -133,7 +131,7 @@ int main() {
 		}
 	}
 
-	for (int i=0; i&lt;size; i++) {
+	for (int i=0; i<size; i++) {
 		printf("%d\n", arr[i]);
 	}
 	return 0;
@@ -211,7 +209,7 @@ As you may have noticed, there are small differences in the programs (like calcu
 Python took around 270 milliseconds each run.
 
 ```
-~$ time python3 bubbleSort.py &gt; /dev/null
+~$ time python3 bubbleSort.py > /dev/null
 ________________________________________________________
 Executed in  272.48 millis    fish           external
    usr time  268.60 millis  995.00 micros  267.60 millis
@@ -224,7 +222,7 @@ C compiled for 32-bit took around 5-8 milliseconds on average. Compiling for 64-
 
 ```
 ~$ gcc -m32 bubbleSort.c -o bubbleSortInC
-~$ time ./bubbleSortInC &gt; /dev/null
+~$ time ./bubbleSortInC > /dev/null
 ________________________________________________________
 Executed in    5.70 millis    fish           external
    usr time    5.63 millis  367.00 micros    5.26 millis
@@ -235,7 +233,7 @@ Finally, assembly took about the same amount of time or _longer_ than vanilla C,
 
 ```
 ~$ as --march=i386 --32 bubbleSort.asm -o bubbleSort.o && ld -m elf_i386 bubbleSort.o -o bubbleSort
-~$ time ./bubbleSort &gt; /dev/null
+~$ time ./bubbleSort > /dev/null
 ________________________________________________________
 Executed in    5.74 millis    fish           external
    usr time    3.01 millis  334.00 micros    2.68 millis

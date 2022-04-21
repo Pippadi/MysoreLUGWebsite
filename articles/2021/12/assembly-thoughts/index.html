@@ -22,8 +22,6 @@
 
 <hr>
 
-<h3 class="article-heading1">This is a heading</h3>
-
 <p class="article-paragraph">
 I've been into computers and coding for a couple years now. I can manage some Python, Go, and C++ (Arduino), configure our home network, and maintain this website.
 One thing that I had been meaning to explore was some of the more low-level stuff.
@@ -39,7 +37,9 @@ This article talks about how I started and what I've learnt. This is not a tutor
 <p class="article-paragraph">
 I searched the internet for <b>getting started with x86 assembly</b>.
 A good number of tutorials I found simply gave you the program for hello world, <em>maybe</em> explained each line, and left you.
-I eventually found <a href="https://www.secureideas.com/blog/2021/05/linux-x86-assembly-how-to-build-a-hello-world-program-in-gas.html">this tutorial from SecureIdeas</a> and <a href="https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html">this paper from Yale</a>.
+I eventually found <a href="https://www.secureideas.com/blog/2021/05/linux-x86-assembly-how-to-build-a-hello-world-program-in-gas.html">this tutorial from SecureIdeas</a>
+ and <a href="https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html">this paper from Yale</a>
+.
 The first was a good introductory tutorial, and the second a useful reference while writing my own programs.
 </p>
 
@@ -120,7 +120,8 @@ I could have used a debugger, but setting it up would probably have taken longer
 </p>
 
 <p class="article-paragraph">
-Going through the <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html">official Intel documentation</a> was actually quite helpful, contrary to what some people online say. If only there was less cruft in x86 so I wouldn't have to spend time figuring out gems like <code>jnbe</code> (seriously, "Jump if not below or equal to"? It even has the same opcode as 'ja').
+Going through the <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html">official Intel documentation</a>
+ was actually quite helpful, contrary to what some people online say. If only there was less cruft in x86 so I wouldn't have to spend time figuring out gems like <code>jnbe</code> (seriously, "Jump if not below or equal to"? It even has the same opcode as 'ja').
 </p>
 
 <p class="article-paragraph">
@@ -159,8 +160,8 @@ int main() {
 	bool sorted = false;
 	while (!sorted) {
 		sorted = true;
-		for (int i=0; i<size-1; i++) {
-			if (arr[i] >gt; arr[i+1]) {
+		for (int i=0; i&lt;size-1; i++) {
+			if (arr[i] &gt; arr[i+1]) {
 				int temp = arr[i+1];
 				arr[i+1] = arr[i];
 				arr[i] = temp;
