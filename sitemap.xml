@@ -2,58 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://mysorelug.indriyallc.net/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/06/intel-wifi-dabbling/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/06/prithvi-linux-story/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/06/refurbishing-old-toshiba/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/06/scipybabble1/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/06/writing-gnome-extension/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/07/linux-macbook-1-1/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/08/noobs-read-this/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/10/laptop-fans/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/11/prithvi-keyboard/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/11/screen-to-webcam/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/12/assembly-thoughts/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2021/12/qemu-bridge-networking/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 	<url>
 		<loc>https://mysorelug.indriyallc.net/articles/2022/01/building-docker-container/</loc>
-		<lastmod>2022-01-20</lastmod>
+		<lastmod>2022-04-21</lastmod>
+	</url>
+	<url>
+		<loc>https://mysorelug.indriyallc.net/articles/2022/02/linux-on-school-computers/</loc>
+		<lastmod>2022-04-21</lastmod>
 	</url>
 </urlset>

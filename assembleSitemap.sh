@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if test -z "$1" ; then
+	echo "Usage: assembleSitemap.sh DESTINATION_FILE"
+	exit 1
+fi
+
 sitemapfile=$1
 today=$(date '+%F')
 
