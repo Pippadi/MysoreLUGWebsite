@@ -1,0 +1,273 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="address=no, telephone=no, date=no">
+	<meta name="description" content="A website for Linux users and geeks in general to express their thoughts and spread information">
+	<title>Host Your Own Pastebin</title>
+	<link rel="stylesheet" type="text/css" href="../../../../shared/css/main.css">
+</head>
+<body>
+<header>
+<h2 class="main-title">Mysore Linux Users' Group</h2>
+<p class="main-subtitle">A website for Linux users and geeks in general to express their thoughts and spread information</p>
+<hr>
+</header>
+
+<main>
+<h1 class="article-title">Host Your Own Pastebin</h1>
+
+<p class="article-subtitle">By Eeshaan K. B. and Prithvi Vishak</p>
+
+<p class="article-subtitle">Created May 3rd, 2022</p>
+
+<p class="article-paragraph">
+If you're like us and host your own IRC server for chatting, you'd probably like some kind of pastebin facility. Yes, Imgur and Mediafire and whatnot exist, but you'd probably prefer hosting it yourself.
+Enter <a href="https://github.com/yac-d/sipb">SIPB, the Simple Image PasteBin</a>, a pastebin that you can host yourself (it's kind of a misnomer; it's not just limited to images).
+</p>
+
+<p class="article-paragraph">
+SIPB has a (very) simple web interface from which users can upload and view files. The server backend is written in Go. The entire codebase is less than 700 lines, and obviously, free and open-source.
+Your own instance of SIPB is a few simple steps away.
+</p>
+
+<div class="article-image-div">
+<img src=assets/webpage.png width="70%" height="auto" alt="Web Interface" >
+<p class="article-image-caption">Behold the pinnacle of web design</p>
+
+</div>
+<h3 class="article-heading1">Getting and Building</h3>
+
+<p class="article-paragraph">
+Everything needed for SIPB is containerized.
+Install <code>git</code>, <code>docker</code>, and <code>docker-compose</code> on your server with your package manager. Create a folder for SIPB, then clone the repository with the code. Also create a folder for uploaded files to reside.
+It is recommended to keep the folder with the uploaded files <em>outside</em> the folder containing the code, to prevent Docker from copying all those files while building the container.
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>mkdir pastebin && cd pastebin
+git clone https://github.com/yac-d/sipb.git
+mkdir files</code></div></p>
+
+<p class="article-paragraph">
+Next, create <code>docker-compose.yml</code> with the following contents:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>version:  "3"
+
+services:
+  sipb:
+    image: 'sipb:latest'
+    container_name: 'sipb'
+    restart: unless-stopped
+    build:
+      context: ${PWD}/sipb
+      dockerfile: ${PWD}/sipb/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - "./files:/var/www/bin"</code></div></p>
+
+<p class="article-paragraph">
+Finally, build and start the container with <code>docker-compose up -d --build</code>. That's it! Launch a browser, and head to <code>http://your-server-ip:8080/pastebin</code>.
+If it doesn't work, you may need to open port <code>8080</code> in your server's firewall.
+</p>
+
+<p class="article-paragraph">
+To update SIPB in the future, just pull the latest code and rebuild your container.
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>cd pastebin/sipb
+git pull
+cd ..
+docker-compose up -d --build</code></div></p>
+
+<h3 class="article-heading1">Configuring</h3>
+
+<p class="article-paragraph">
+SIPB first reads its configuration from <code>/etc/config.yaml</code> in the container (<a href="https://github.com/yac-d/sipb/blob/main/server/config.yaml.docker"><code>server/config.yaml.docker</code></a> in the repository).
+These values can be overriden by environment variables, if set. It is recommended to set configuration with environment variables, so that there is no need to jimmy in a separate config file or rebuild the container every time you change something.
+</p>
+
+<p class="article-paragraph">
+To change the maximum file size to 2GB, add the following to your <code>docker-compose.yml</code> under <code>sipb</code>:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>environment:
+  - "SIPB_MAX_FILE_SIZE=2000000000"</code></div></p>
+
+<p class="article-paragraph">
+For all configuration options, see <a href="https://github.com/yac-d/sipb/tree/main/server#configuration">this</a>.
+</p>
+
+<h3 class="article-heading1">Securing and Deploying</h3>
+
+<p class="article-paragraph">
+SIPB has no security features of its own, as we thought it was best left to more mature programs.
+We'll be going through adding HTTP basic authentication and SSL/TLS for HTTPS.
+</p>
+
+<p class="article-paragraph">
+To do this, We're going to use <a href="https://nginxproxymanager.com/">Nginx Proxy Manager</a> to set up Nginx as a reverse proxy.
+Add the following to your <code>docker-compose.yml</code> under <code>services</code>:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: 'proxy'
+    restart: unless-stopped
+    ports:
+      - "81:81"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxydata:/data
+      - ${PWD}/secrets:/etc/mysecrets</code></div></p>
+
+<h4 class="article-heading2">HTTP Basic Authentication</h4>
+
+<p class="article-paragraph">
+HTTP basic authentication provides a simple username/password barrier.
+At present, it is assumed that you trust <em>everyone</em> you share the username and password with, as there is no system of accounts and permissions.
+</p>
+
+<p class="article-paragraph">
+Install the <code>htpasswd</code> tool (usually provided by packages like <code>httpd-tools</code> or <code>apache2-utils</code>). Next, create a folder to hold your secret files. Here, create a password file.
+Replace <code>username</code> with your preferred username, and respond to the password prompts.
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>mkdir secrets && cd secrets
+htpasswd -c htpasswd username</code></div></p>
+
+<p class="article-paragraph">
+Navigate back up to your folder with the compose file and run <code>docker-compose up -d</code> to start Nginx Proxy Manager.
+Then, launch a browser and go to <code>http://your-server-ip:81/</code>. Enter the default credentials <code>admin@example.com</code> with password <code>changeme</code>. Go through the user creation.
+</p>
+
+<p class="article-paragraph">
+Create a proxy host by going to Hosts->Proxy Hosts and hitting "Add Proxy Host".
+Fill in domain name as necessary. You may want to add your server's IP as a second domain name. Set "Scheme" to <code>http</code>, "Forward Hostname" to your server's IP, and port to <code>8080</code> as we had configured above.
+Hit "Save", then go to your domain/server IP on port 80. If you see SIPB, things are working as they should.
+</p>
+
+<div class="article-image-div">
+<img src=assets/nginx-proxy-details.png width="auto" height="auto" alt="Reverse Proxy configuration" >
+</div>
+<p class="article-paragraph">
+To add HTTP basic auth, edit the proxy host you just created. Navigate to the "Advanced" tab, and in the "Custom Nginx Configuration" box, add the following lines:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>auth_basic "Access to pastebin restricted";
+auth_basic_user_file "/etc/mysecrets/htpasswd";</code></div></p>
+
+<p class="article-paragraph">
+Go to your server on port 80 again. You should get a password prompt. Enter the username and password you set in the <code>htpasswd</code> file earlier. Hooray. You now have HTTP basic auth.
+</p>
+
+<p class="article-paragraph">
+Thank you, <a href="https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/">docs</a>.
+</p>
+
+<h4 class="article-heading2">HTTPS</h4>
+
+<p class="article-paragraph">
+Obtain SSL certificates for your domain from a CA. We're not going to go into how to do that here. That's its own world of pain everyone must at one point go through alone.
+Nginx Proxy Manager seems to allow you to request certificates from LetsEncrypt dircetly from the web interface.
+We've personally never tried this, but I do know that you need to have your pastebin exposed on port 80 publicly (forwarded on your router), and that you cannot set your server's local IP as a hostname in Nginx Proxy Manager (for obvious reasons).
+Here, we're assuming you have your certs already. We're going to refer to them as <code>server.crt</code>, <code>server.key</code>, and <code>ca_bundle.crt</code>.
+</p>
+
+<p class="article-paragraph">
+Copy them to your <code>secrets</code> folder as you did with <code>htpasswd</code>. Append the contents of <code>ca_bundle.crt</code> to <code>server.crt</code>.
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>cat ca_bundle.crt >> server.crt</code></div></p>
+
+<p class="article-paragraph">
+Navigate back to the proxy host you made in Nginx Proxy Manager. Add the following lines below your HTTP basic auth configuration:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>listen 443;
+ssl on;
+ssl_certificate /etc/mysecrets/server.crt;
+ssl_certificate_key /etc/mysecrets/server.key;
+server_name your-domain.com;</code></div></p>
+
+<div class="article-image-div">
+<img src=assets/nginx-proxy-advanced.png width="auto" height="auto" alt="Advanced pane" >
+<p class="article-image-caption">Yeah, you could have just done this with regular old Nginx and a config file, but this is prettier</p>
+
+</div>
+<p class="article-paragraph">
+Hitting "Save" ought to do it. Ensure your server and router have the appropriate ports open and forwarded respectively. Enjoy!
+</p>
+
+<p class="article-paragraph">
+Thanks again, <a href="https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-http/">docs</a>.
+</p>
+
+<h3 class="article-heading1">Final State</h3>
+
+<p class="article-paragraph">
+Your filesystem should look something like this:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>pastebin
+├── files
+│   ├── 12412452345_Your Arch user friend's daily screenshot.png
+│   └── 12412352455_Your Arch user friend's daily screenshot.png
+├── data
+│   └── ... Just Nginx Proxy Manager stuff
+├── docker-compose.yml
+├── sipb
+│   ├── assets
+│   ├── Dockerfile
+│   ├── LICENSE
+│   ├── README.md
+│   ├── server
+│   └── webpages
+└── secrets
+    ├── ca_bundle.crt
+    ├── htpasswd
+    ├── server.crt
+    └── server.key</code></div></p>
+
+<p class="article-paragraph">
+Your <code>docker-compose.yml</code> should look something like this:
+</p>
+
+<p class="article-paragraph"><div class="article-code"><code>version:  "3"
+
+services:
+  sipb:
+    image: 'sipb:latest'
+    container_name: 'sipb'
+    restart: unless-stopped
+    build:
+      context: ${PWD}/repo
+      dockerfile: ${PWD}/repo/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - "./bin:/var/www/bin"
+
+  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: 'proxy'
+    restart: unless-stopped
+    ports:
+      - "81:81"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./data:/data
+      - ${PWD}/secrets:/etc/mysecrets</code></div></p>
+
+</main>
+
+<footer>
+<hr>
+<a href="https://github.com/Pippadi/MysoreLUGWebsite">Contribute on GitHub.</a><br> 
+<a href="/">Read More</a><br>
+<p>If you want to advertise our website, use this button: <a href="https://mysorelug.indriyallc.net/"><img src="/shared/images/button.gif" alt="button"></a></p>
+</footer>
+</body>
+</html>
