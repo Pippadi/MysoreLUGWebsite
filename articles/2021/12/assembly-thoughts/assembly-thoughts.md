@@ -100,7 +100,7 @@ sorted = False
 while not sorted:
     sorted = True
     for i in range(len(l)-1):
-        if l[i] > l[i+1]:
+        if l[i] &gt; l[i+1]:
             l[i], l[i+1] = l[i+1], l[i]
             sorted = False
 
@@ -110,8 +110,8 @@ print(l)
 And the C:
 
 ```
-#include <stdio.h>
-#include <stdbool.h>
+#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
 
 #define size 1000
 
@@ -121,8 +121,8 @@ int main() {
 	bool sorted = false;
 	while (!sorted) {
 		sorted = true;
-		for (int i=0; i<size-1; i++) {
-			if (arr[i] > arr[i+1]) {
+		for (int i=0; i&lt;size-1; i++) {
+			if (arr[i] &gt; arr[i+1]) {
 				int temp = arr[i+1];
 				arr[i+1] = arr[i];
 				arr[i] = temp;
@@ -131,7 +131,7 @@ int main() {
 		}
 	}
 
-	for (int i=0; i<size; i++) {
+	for (int i=0; i&lt;size; i++) {
 		printf("%d\n", arr[i]);
 	}
 	return 0;

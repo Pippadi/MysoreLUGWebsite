@@ -1,5 +1,5 @@
 # MysoreLUGWebsite
-A Website for the Mysore Linux Users' Group, currently at [mysorelug.indriyallc.net](https://mysorelug.indriyallc.net).
+A Website for the Mysore Linux Users' Group, currently at [plootarg.com](https://plootarg.com).
 
 This site aims to be a medium for Linux users and geeks in general to express their thoughts and spread information.
 
@@ -39,7 +39,7 @@ This is a code block.
 !width="70%" height="auto" alt="Raspberry Pi"
 A Raspberry Pi
 
-This is a [link](https://mysorelug.indriyallc.net).
+This is a [link](https://plootarg.com).
 ```
 
 To run the `mdparse` script from the root folder of the repository to generate HTML:
@@ -48,7 +48,7 @@ mdparse/mdparse articles/2021/12/example-article/example-article.md mdparse/temp
 ```
 `mdparse/templates` is the location of the HTML template files.
 The script writes the HTML to `STDOUT`, so there is no need to create a new file to preview. Once final, the output can simply be redirected to a file as shown.
-The example's HTML output can be seen [here](https://mysorelug.indriyallc.net/articles/2021/12/template-article/Index.html).
+The example's HTML output can be seen [here](https://plootarg.com/articles/2021/12/template-article/Index.html).
 
 The default templates in the `mdparse/templates` contain relative paths for items like the main stylesheet (`shared/css/main.css`). This means that you may want to change these paths depending on the location of your article.
 By default, the relative paths are based on the assumption that the final HTML will reside in the `articles/<year>/<month>/<article-name>` directory (which is where articles ought to be).
