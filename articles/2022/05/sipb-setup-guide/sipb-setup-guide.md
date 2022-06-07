@@ -5,7 +5,7 @@
 If you're like us and host your own IRC server for chatting, you'd probably like some kind of pastebin facility. Yes, Imgur and Mediafire and whatnot exist, but you'd probably prefer hosting it yourself.
 Enter [SIPB, the Simple Image PasteBin](https://github.com/yac-d/sipb), a pastebin that you can host yourself (it's kind of a misnomer; it's not just limited to images).
 
-SIPB has a (very) simple web interface from which users can upload and view files. The server backend is written in Go. The entire codebase is less than 700 lines, and obviously, free and open-source.
+SIPB has a (very) simple web interface from which users can upload and view files. The server backend is written in Go. The entire codebase is less than 1000 lines, and obviously, free and open-source.
 Your own instance of SIPB is a few simple steps away.
 
 !assets/webpage.png
@@ -128,8 +128,8 @@ Thank you, [docs](https://docs.nginx.com/nginx/admin-guide/security-controls/con
 #### HTTPS
 
 Obtain SSL certificates for your domain from a CA. We're not going to go into how to do that here. That's its own world of pain everyone must at one point go through alone.
-Nginx Proxy Manager seems to allow you to request certificates from LetsEncrypt dircetly from the web interface.
-We've personally never tried this, but I do know that you need to have your pastebin exposed on port 80 publicly (forwarded on your router), and that you cannot set your server's local IP as a hostname in Nginx Proxy Manager (for obvious reasons). 
+Nginx Proxy Manager seems to allow you to request certificates from LetsEncrypt directly from the web interface.
+We've personally never tried this, but we do know that you need to have your pastebin exposed on port 80 publicly (forwarded on your router), and that you cannot set your server's local IP as a hostname in Nginx Proxy Manager (for obvious reasons). 
 Here, we're assuming you have your certs already. We're going to refer to them as `server.crt`, `server.key`, and `ca_bundle.crt`.
 
 Copy them to your `secrets` folder as you did with `htpasswd`. Append the contents of `ca_bundle.crt` to `server.crt`.
