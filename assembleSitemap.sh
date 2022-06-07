@@ -7,11 +7,12 @@ fi
 
 sitemapfile=$1
 today=$(date '+%F')
+domain="plootarg.com"
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' > $sitemapfile
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> $sitemapfile
 echo "	<url>
-		<loc>https://mysorelug.indriyallc.net/</loc>
+		<loc>https://$domain/</loc>
 		<lastmod>$today</lastmod>
 	</url>" >> $sitemapfile
 
@@ -21,7 +22,7 @@ for item in ** ; do
 	if [ -d $item ] && [ -f $item/index.html ] ; then
 		echo \
 "	<url>
-		<loc>https://mysorelug.indriyallc.net/$item/</loc>
+		<loc>https://$domain/$item/</loc>
 		<lastmod>$today</lastmod>
 	</url>" >> $sitemapfile
 	fi
